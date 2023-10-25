@@ -12,6 +12,7 @@ export const COLOR = {
   BLACK_COLOR: "#000000",
   GREY_COLOR: "#808080",
   WHITE_SMOKE: "#BFBFBF",
+  LIGHT_GREY: "#F5F5F5",
 };
 
 export const FONT_SIZE = {

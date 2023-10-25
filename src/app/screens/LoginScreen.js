@@ -24,7 +24,7 @@ const LoginScreen = ({ setLogin }) => {
     } else if (!Utility.validatePassword(password.trim())) {
       toast("Please enter valid password");
     } else {
-      navigate("/home");
+      navigate("/dashboard");
       setLogin(true);
     }
   };
