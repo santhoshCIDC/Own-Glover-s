@@ -1,15 +1,24 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap");
 
 * {
   margin: 0;
   padding: 0;
-  font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans", sans-serif !important;
 }
 p {
   font-size: 14px;
 }
 h5 {
   font-size: 17.5px !important;
+}
+h6 {
+  font-size: 14px !important;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 .SplashContainer {
   background-color: white;
@@ -63,4 +72,25 @@ h5 {
   align-items: flex-start !important;
   justify-content: flex-start !important;
   width: 100%;
+}
+.active-text-color {
+  border-bottom-color: #005dab;
+  border-bottom-style: solid;
+}
+.settings_th {
+  font-size: 14px !important;
+  padding-left: 25px;
+}
+.dropdown-menu {
+  --bs-dropdown-bg: #f7f5ff !important;
+  --bs-dropdown-link-active-bg: #005dab !important;
+  border-radius: 3px !important;
+}
+.dropdown-toggle::after {
+  display: none !important;
+}
+.dropdown_icon{
+  width: 15px;
+  margin-top: 3px;
+  height: 17px;
 }

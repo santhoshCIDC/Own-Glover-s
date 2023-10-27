@@ -5,4 +5,6 @@ export const IMAGES = {
   setting_Icon: require("../../app/assets/settings.png"),
   calendar_Icon: require("../../app/assets/calendar.png"),
   downArrow_Icon: require("../../app/assets/down-arrow.png"),
+  lock_Icon: require("../../app/assets/padlock.png"),
+  logout_Icon: require("../../app/assets/logout.png"),
 };

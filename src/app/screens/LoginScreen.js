@@ -8,7 +8,7 @@ import { Icon } from "@iconify/react";
 import Utility from "../utils/Utility";
 import { COLOR, FONT_SIZE } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
-const LoginScreen = ({ setLogin }) => {
+const LoginScreen = ({setLogin}) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,6 +26,7 @@ const LoginScreen = ({ setLogin }) => {
     } else {
       navigate("/dashboard");
       setLogin(true);
+      localStorage.setItem("loginData", true);
     }
   };
 
