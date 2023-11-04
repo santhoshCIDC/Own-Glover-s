@@ -1,13 +1,21 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../redux/store";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
+
+  const tokenDetails = useAppSelector((state) => state.auth.tokenDetails);
   useEffect(() => {
     setTimeout(() => {
-      navigate("/login");
-    }, 3000);
+      if (tokenDetails) {
+        navigate("/dashboard");
+      } else {
+        navigate("/login");
+      }
+    }, 2000);
   });
+
   return (
     <div
       className="flex-container"

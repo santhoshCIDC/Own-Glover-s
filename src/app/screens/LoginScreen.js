@@ -1,32 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import baseballGround from "../assets/bg.png";
 import { Button, Card } from "react-bootstrap";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Toast from "../components/ToastContainer";
 import { Icon } from "@iconify/react";
-import Utility from "../utils/Utility";
+import Utility, { ToastMessage } from "../utils/Utility";
 import { COLOR, FONT_SIZE } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
-const LoginScreen = ({setLogin}) => {
+import { useLoginMutation } from "../../app/redux/services/AuthService";
+import { loader } from "../components/Loader";
+
+const LoginScreen = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [login, { data, isLoading, isSuccess }] = useLoginMutation();
 
-  const onClickLoginButton = () => {
+  useEffect(() => {
+    if (data?.code === 0) {
+      if (isSuccess) {
+        navigate("/dashboard");
+      }
+    }
+  }, [isSuccess]);
+
+  const onClickLoginButton = async () => {
     if (email.trim().length === 0) {
-      toast("Please enter email");
+      Utility.toastMessage("Please enter email");
     } else if (!Utility.validateEmail(email.trim())) {
-      toast("Please enter valid email");
+      Utility.toastMessage("Please enter valid email");
     } else if (password.trim().length === 0) {
-      toast("Please enter password");
+      Utility.toastMessage("Please enter password");
     } else if (!Utility.validatePassword(password.trim())) {
-      toast("Please enter valid password");
+      Utility.toastMessage("Please enter valid password");
     } else {
-      navigate("/dashboard");
-      setLogin(true);
-      localStorage.setItem("loginData", true);
+      let loginReq = {
+        email: email.trim().toLowerCase(),
+        password: password.trim(),
+      };
+      await login(loginReq);
     }
   };
 
@@ -87,7 +98,7 @@ const LoginScreen = ({setLogin}) => {
                     fontSize: FONT_SIZE.S,
                   }}
                   type={"email"}
-                  class="form-control"
+                  className="form-control"
                   id="exampleFormControlInput1"
                   placeholder="Email"
                   value={email}
@@ -106,8 +117,8 @@ const LoginScreen = ({setLogin}) => {
                         fontSize: FONT_SIZE.S,
                       }}
                       type={showPassword ? "text" : "password"}
-                      class="form-control"
-                      id="exampleFormControlInput1"
+                      className="form-control"
+                      id="exampleFormControlInput2"
                       placeholder="Password"
                       value={password}
                       onChange={(text) => setPassword(text.target.value)}
@@ -134,10 +145,18 @@ const LoginScreen = ({setLogin}) => {
                     borderRadius: 8,
                     backgroundColor: COLOR.BUTTON_COLOR,
                     borderColor: COLOR.BUTTON_COLOR,
+                    display: "flex",
+                    justifyContent: "center",
                   }}
                   onClick={onClickLoginButton}
                 >
-                  Login
+                  {isLoading ? (
+                    loader()
+                  ) : (
+                    <h5 style={{ fontSize: FONT_SIZE.S, display: "contents" }}>
+                      Login
+                    </h5>
+                  )}
                 </Button>
               </div>
             </div>
@@ -154,19 +173,7 @@ const LoginScreen = ({setLogin}) => {
         </Card>
         <div className="col-4"></div>
       </div>
-      <Toast
-        className={"Toastify"}
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      ></Toast>
+      {ToastMessage()}
     </div>
   );
 };

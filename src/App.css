@@ -9,9 +9,6 @@
 p {
   font-size: 14px;
 }
-h5 {
-  font-size: 17.5px !important;
-}
 h6 {
   font-size: 14px !important;
 }
@@ -80,6 +77,7 @@ input::-webkit-inner-spin-button {
 .settings_th {
   font-size: 14px !important;
   padding-left: 25px;
+  border-block-width: none !important;
 }
 .dropdown-menu {
   --bs-dropdown-bg: #f7f5ff !important;
@@ -89,8 +87,14 @@ input::-webkit-inner-spin-button {
 .dropdown-toggle::after {
   display: none !important;
 }
-.dropdown_icon{
+.dropdown_icon {
   width: 15px;
   margin-top: 3px;
   height: 17px;
 }
+.tooltip {
+  background-color: white !important;
+  color: black !important;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.064);
+}
+

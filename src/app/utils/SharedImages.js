@@ -7,4 +7,7 @@ export const IMAGES = {
   downArrow_Icon: require("../../app/assets/down-arrow.png"),
   lock_Icon: require("../../app/assets/padlock.png"),
   logout_Icon: require("../../app/assets/logout.png"),
+  pencil_Icon: require("../../app/assets/pencil.png"),
+  delete_Icon: require("../../app/assets/trash.png"),
+  baseBall_Gifts: require("../../app/assets/baseballGifs.gif"),
 };

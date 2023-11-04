@@ -1,8 +1,20 @@
 import React from "react";
 import { IMAGES } from "../utils/SharedImages";
 import { COLOR, FONT_SIZE } from "../utils/constants";
+import ModalContainer from "./ModalContainer";
+import { useDispatch } from "react-redux";
+import { isLogout } from "../redux/slices/AuthSlice";
+import { useNavigate } from "react-router-dom";
 
-const DropdownContainer = ({ editprofile, changepassword, logout }) => {
+const DropdownContainer = ({
+  editprofile,
+  changepassword,
+  logout,
+  databstoggle,
+  databstarget,
+}) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   return (
     <div>
       <div className="dropdown">
@@ -63,6 +75,8 @@ const DropdownContainer = ({ editprofile, changepassword, logout }) => {
               className="dropdown-item d-flex align-items-center"
               type="button"
               style={{ fontSize: FONT_SIZE.S }}
+              data-bs-toggle={databstoggle}
+              data-bs-target={databstarget}
             >
               <img
                 src={IMAGES.logout_Icon}
@@ -74,6 +88,17 @@ const DropdownContainer = ({ editprofile, changepassword, logout }) => {
           </li>
         </ul>
       </div>
+      <ModalContainer
+        modaltitle={"Logout"}
+        modalbody={"Are you sure you want to logout?"}
+        CancelText={"Cancel"}
+        OkText={"Logout"}
+        okOnClick={() => {
+          dispatch(isLogout());
+          navigate("/login");
+        }}
+        alertModal={true}
+      />
     </div>
   );
 };

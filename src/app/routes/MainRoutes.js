@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SplashScreen from "../screens/SplashScreen";
 import LoginScreen from "../screens/LoginScreen";
@@ -8,21 +8,20 @@ import UserListScreen from "../screens/UserListScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import SeasonsScreen from "../screens/SeasonsScreen";
 
+import { useAppSelector } from "../redux/store";
+
 const MainRoutes = () => {
-  const [login, setLogin] = useState(
-    localStorage.getItem("loginData")
-      ? localStorage.getItem("loginData")
-      : false
-  );
+  const tokenDetails = useAppSelector((state) => state.auth.tokenDetails);
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SplashScreen />} />
-        <Route path="/login" element={<LoginScreen setLogin={setLogin} />} />
+        <Route path="/login" element={<LoginScreen />} />
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute auth={login}>
+            <ProtectedRoute auth={tokenDetails}>
               <DashboardScreen />
             </ProtectedRoute>
           }
@@ -30,7 +29,7 @@ const MainRoutes = () => {
         <Route
           path="/userList"
           element={
-            <ProtectedRoute auth={login}>
+            <ProtectedRoute auth={tokenDetails}>
               <UserListScreen />
             </ProtectedRoute>
           }
@@ -38,7 +37,7 @@ const MainRoutes = () => {
         <Route
           path="/settings"
           element={
-            <ProtectedRoute auth={login}>
+            <ProtectedRoute auth={tokenDetails}>
               <SettingsScreen />
             </ProtectedRoute>
           }
@@ -46,7 +45,7 @@ const MainRoutes = () => {
         <Route
           path="/seasons"
           element={
-            <ProtectedRoute auth={login}>
+            <ProtectedRoute auth={tokenDetails}>
               <SeasonsScreen />
             </ProtectedRoute>
           }

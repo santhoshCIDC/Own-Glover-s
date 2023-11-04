@@ -1,21 +1,31 @@
-import React, { useState } from "react";
-import DropdownContainer from "../components/DropdownContainer";
+import React, { useEffect, useState } from "react";
+import { useLazyGetSettingsQuery } from "../redux/services/SettingsService";
+import { useSelector } from "react-redux";
+import Header from "../components/Header";
 
 const SettingScreen = () => {
-  const [noofPlayers, setNoofPlayers] = useState("");
-  const [noofStaffs, setNoofStaffs] = useState("");
+  const [getSettings] = useLazyGetSettingsQuery();
+  //Global State
+  const settingsDetails = useSelector(
+    (state) => state.settings.settingsDetails
+  );
+
+  //Local State
+  const [noofPlayers, setNoofPlayers] = useState(
+    settingsDetails?.total_no_players_home_team
+  );
+  const [noofStaffs, setNoofStaffs] = useState(
+    settingsDetails?.no_of_staffs_coaches_home_team
+  );
+
+  useEffect(() => {
+    getSettings({});
+  }, [getSettings]);
+
+  //Initial render
   return (
     <div className="container-fluid h-100 p-0">
-      <div className="container-fluid py-3">
-        <div className="m-0 d-flex flex-column flex-sm-row justify-content-between align-items-center">
-          <div className="search-container col-sm-3"></div>
-          <DropdownContainer
-            editprofile={"Edit Profile"}
-            changepassword={"Change Password"}
-            logout={"Logout"}
-          />
-        </div>
-      </div>
+      <Header />
       <div className="container-fluid py-3 border-top">
         <div className="row">
           <div className="col">
@@ -25,7 +35,7 @@ const SettingScreen = () => {
       </div>
       <div className=" ms-3 me-3 border">
         <button
-          className="btn  w-10 mt-4 mb-3"
+          className="btn w-10 mt-4 mb-3"
           style={{ marginRight: "1vw", border: "none", cursor: "default" }}
         >
           <h6 className=" fw-bold active-text-color text-nowrap">
@@ -33,7 +43,7 @@ const SettingScreen = () => {
           </h6>
         </button>
         <div className="table-responsive">
-          <table class="mb-0">
+          <table className="mb-0">
             <thead>
               <tr>
                 <th
@@ -70,17 +80,17 @@ const SettingScreen = () => {
                   />
                 </td>
                 <td className="settings_th">
-                  <button class="btn btn-success px-3 py-1">
-                    <h6 class="mb-0 fw-bold">Submit</h6>
+                  <button className="btn btn-success px-3 py-1">
+                    <h6 className="mb-0 fw-bold">Submit</h6>
                   </button>
                 </td>
                 <td className="px-3">
                   <button
-                    class="btn btn-danger align-items-center d-flex flex-column"
+                    className="btn btn-danger align-items-center d-flex flex-column"
                     style={{ height: 30, width: 30 }}
                     onClick={() => setNoofPlayers("")}
                   >
-                    <h6 class="mb-0 fw-bold">X</h6>
+                    <h6 className="mb-0 fw-bold">X</h6>
                   </button>
                 </td>
               </tr>
@@ -100,17 +110,17 @@ const SettingScreen = () => {
                   />
                 </td>
                 <td className="settings_th">
-                  <button class="btn btn-success px-3 py-1">
-                    <h6 class="mb-0 fw-bold">Submit</h6>
+                  <button className="btn btn-success px-3 py-1">
+                    <h6 className="mb-0 fw-bold">Submit</h6>
                   </button>
                 </td>
                 <td className="px-3">
                   <button
-                    class="btn btn-danger align-items-center d-flex flex-column"
+                    className="btn btn-danger align-items-center d-flex flex-column"
                     style={{ height: 30, width: 30 }}
                     onClick={() => setNoofStaffs("")}
                   >
-                    <h6 class="mb-0 fw-bold">X</h6>
+                    <h6 className="mb-0 fw-bold">X</h6>
                   </button>
                 </td>
               </tr>
