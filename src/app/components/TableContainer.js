@@ -3,18 +3,17 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import { FONT_SIZE } from "../utils/constants";
 import { IMAGES } from "../utils/SharedImages";
 import Tooltip from "./Tooltip";
+import ModalContainer from "./ModalContainer";
+import RenderModal from "./RenderModal";
 
 const capitalize = (word) => {
   return word[0].toUpperCase() + word.slice(1);
 };
 const TableContainer = ({
   data,
-  withBorder = true,
-  seasonsList = false,
-  inputValue,
-  onChange,
 }) => {
   const [users, setUsers] = useState(data);
+  const [showModal, setShowModal] = useState(false);
 
   const renderSeasonsList = () => {
     return users.map(({ SNo, seasons, update, Delete }) => {
@@ -29,13 +28,32 @@ const TableContainer = ({
           <td className="ps-2">{SNo}</td>
           <td className="ps-2">{seasons}</td>
           <td className="ps-2">
-            <img
-              style={{ height: 15, width: 15, cursor: "pointer" }}
-              src={IMAGES.pencil_Icon}
-              alt="pencil"
-              data-tooltip-id="edit-tooltip"
-            />
-            <Tooltip id={"edit-tooltip"} content="Edit" />
+            <button className="border-0" type="button"
+              onClick={() => setShowModal(true)}
+            >
+              <img
+                style={{ height: 15, width: 15, cursor: "pointer" }}
+                src={IMAGES.pencil_Icon}
+                alt="pencil"
+                data-tooltip-id="edit-tooltip"
+              />
+              <Tooltip id={"edit-tooltip"} content="Edit" />
+
+            </button>
+            <RenderModal
+              show={showModal}
+              onHide={() => setShowModal(false)}
+              cancelOnClick={() => setShowModal(false)}
+              modaltitle={"Season Name:"}
+              modalbody={
+                <div className="bg-black">
+                  <h1>hiiii</h1>
+                </div>
+              }
+              CancelText={"Cancel"}
+              OkText={"Logout"}
+              okOnClick={() => {
+              }} />
           </td>
           <td className="ps-2">
             <img
@@ -57,9 +75,9 @@ const TableContainer = ({
         {Object.keys(data[0]).map((key) => (
           <th
             className={
-             
-                "bg-light border-top border-bottom py-2 ps-2"
-               
+
+              "bg-light border-top border-bottom py-2 ps-2"
+
             }
             style={{
               fontSize: FONT_SIZE.S,

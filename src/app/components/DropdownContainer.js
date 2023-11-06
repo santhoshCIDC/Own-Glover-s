@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { IMAGES } from "../utils/SharedImages";
 import { COLOR, FONT_SIZE } from "../utils/constants";
 import ModalContainer from "./ModalContainer";
 import { useDispatch } from "react-redux";
 import { isLogout } from "../redux/slices/AuthSlice";
 import { useNavigate } from "react-router-dom";
+import RenderModal from "./RenderModal";
 
 const DropdownContainer = ({
   editprofile,
@@ -15,6 +16,7 @@ const DropdownContainer = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
   return (
     <div>
       <div className="dropdown">
@@ -75,8 +77,7 @@ const DropdownContainer = ({
               className="dropdown-item d-flex align-items-center"
               type="button"
               style={{ fontSize: FONT_SIZE.S }}
-              data-bs-toggle={databstoggle}
-              data-bs-target={databstarget}
+              onClick={() => { setShowModal(true) }}
             >
               <img
                 src={IMAGES.logout_Icon}
@@ -88,7 +89,10 @@ const DropdownContainer = ({
           </li>
         </ul>
       </div>
-      <ModalContainer
+      <RenderModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        cancelOnClick={() => setShowModal(false)}
         modaltitle={"Logout"}
         modalbody={"Are you sure you want to logout?"}
         CancelText={"Cancel"}
@@ -96,9 +100,7 @@ const DropdownContainer = ({
         okOnClick={() => {
           dispatch(isLogout());
           navigate("/login");
-        }}
-        alertModal={true}
-      />
+        }} />
     </div>
   );
 };
