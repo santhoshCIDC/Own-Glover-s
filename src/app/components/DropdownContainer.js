@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import { IMAGES } from "../utils/SharedImages";
 import { COLOR, FONT_SIZE } from "../utils/constants";
-import ModalContainer from "./ModalContainer";
 import { useDispatch } from "react-redux";
 import { isLogout } from "../redux/slices/AuthSlice";
 import { useNavigate } from "react-router-dom";
 import RenderModal from "./RenderModal";
 
-const DropdownContainer = ({
-  editprofile,
-  changepassword,
-  logout,
-  databstoggle,
-  databstarget,
-}) => {
+const DropdownContainer = ({ editprofile, changepassword, logout }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -21,10 +14,9 @@ const DropdownContainer = ({
     <div>
       <div className="dropdown">
         <button
-          className="btn dropdown-toggle d-flex align-items-center rounded-1 p-2  "
+          className="btn dropdown-toggle d-flex align-items-center rounded-1 p-2 me-lg-3  "
           style={{
             backgroundColor: COLOR.LIGHT_GREY,
-            marginRight: 50,
             border: "0",
           }}
           type="button"
@@ -63,6 +55,7 @@ const DropdownContainer = ({
               className="dropdown-item border-top border-bottom d-flex align-items-center"
               type="button"
               style={{ fontSize: FONT_SIZE.S }}
+              onClick={() => navigate("/changepassword")}
             >
               <img
                 src={IMAGES.lock_Icon}
@@ -77,7 +70,9 @@ const DropdownContainer = ({
               className="dropdown-item d-flex align-items-center"
               type="button"
               style={{ fontSize: FONT_SIZE.S }}
-              onClick={() => { setShowModal(true) }}
+              onClick={() => {
+                setShowModal(true);
+              }}
             >
               <img
                 src={IMAGES.logout_Icon}
@@ -97,10 +92,12 @@ const DropdownContainer = ({
         modalbody={"Are you sure you want to logout?"}
         CancelText={"Cancel"}
         OkText={"Logout"}
+        logoutModal={true}
         okOnClick={() => {
           dispatch(isLogout());
           navigate("/login");
-        }} />
+        }}
+      />
     </div>
   );
 };

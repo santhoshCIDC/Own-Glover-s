@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { Icon } from "@iconify/react";
-import { COLOR, FONT_SIZE } from "../utils/constants";
-import DropdownContainer from "../components/DropdownContainer";
 import Header from "../components/Header";
 
 const DashboardScreen = () => {
@@ -11,6 +8,7 @@ const DashboardScreen = () => {
     <div className="container-fluid h-100 p-0">
       <Header
         searchBar={true}
+        className={"search-container col-sm-3 mb-md-0 mb-3"}
         value={isSearch}
         onChange={(text) => {
           setIsSearch(text.target.value);

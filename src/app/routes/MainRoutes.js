@@ -9,6 +9,8 @@ import SettingsScreen from "../screens/SettingsScreen";
 import SeasonsScreen from "../screens/SeasonsScreen";
 
 import { useAppSelector } from "../redux/store";
+import ChangePassword from "../screens/ChangePassword";
+import EventsList from "../screens/EventsList/EventsList";
 
 const MainRoutes = () => {
   const tokenDetails = useAppSelector((state) => state.auth.tokenDetails);
@@ -35,10 +37,10 @@ const MainRoutes = () => {
           }
         />
         <Route
-          path="/settings"
+          path="/eventsList"
           element={
             <ProtectedRoute auth={tokenDetails}>
-              <SettingsScreen />
+              <EventsList />
             </ProtectedRoute>
           }
         />
@@ -47,6 +49,22 @@ const MainRoutes = () => {
           element={
             <ProtectedRoute auth={tokenDetails}>
               <SeasonsScreen />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute auth={tokenDetails}>
+              <SettingsScreen />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/changepassword"
+          element={
+            <ProtectedRoute auth={tokenDetails}>
+              <ChangePassword />
             </ProtectedRoute>
           }
         />

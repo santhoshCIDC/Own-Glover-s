@@ -139,6 +139,7 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               }}
               onClick={() => {
                 setIsClicked("title4");
+                navigate("/eventsList");
               }}
             >
               <img

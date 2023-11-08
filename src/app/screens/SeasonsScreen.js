@@ -1,37 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { FONT_SIZE } from "../utils/constants";
 import TableContainer from "../components/TableContainer";
-import { IMAGES } from "../utils/SharedImages";
 import Header from "../components/Header";
+import RenderModal from "../components/RenderModal";
 
 const SeasonsScreen = () => {
   const INITIAL_STATE = [
     {
-      SNo: "01",
+      sNo: "01",
       seasons: "Summer 2023-2024",
-      update: IMAGES.pencil_Icon,
-      Delete: "coding",
+      update: "",
+      delete: "",
     },
     {
-      SNo: "02",
+      sNo: "02",
       seasons: "Fall 2023",
-      update: IMAGES.pencil_Icon,
-      Delete: "reading",
+      update: "",
+      delete: "",
     },
     {
-      SNo: "03",
+      sNo: "03",
       seasons: "Spring 2023",
-      update: IMAGES.pencil_Icon,
-      Delete: require("../../app/assets/trash.png"),
+      update: "",
+      delete: "",
     },
     {
-      SNo: "04",
+      sNo: "04",
       seasons: "Winter 2023-2024",
-      update: IMAGES.pencil_Icon,
-      Delete: require("../../app/assets/trash.png"),
+      update: "",
+      delete: "",
     },
   ];
-
+  const [showModal, setShowModal] = useState(false);
   // Initial render
   return (
     <div className="container-fluid h-100 p-0">
@@ -56,11 +56,52 @@ const SeasonsScreen = () => {
             <button
               className="px-1 m-4 rounded-1"
               style={{ fontSize: FONT_SIZE.S, border: "none" }}
+              onClick={() => setShowModal(true)}
             >
               Create Season
             </button>
           </div>
-          <TableContainer data={INITIAL_STATE} seasonsList={true} />
+          <RenderModal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            closeBtnOnClick={() => setShowModal(false)}
+            modaltitle={"Season Name:"}
+            modalbody={
+              <div>
+                <input
+                  className="border border-success-subtle border-1 p-1 px-2"
+                  placeholder="Season Name"
+                  style={{ fontSize: FONT_SIZE.S, borderRadius: 3 }}
+                />
+                <h6 className="date-text pt-3">Start Date:</h6>
+                <input
+                  type="date"
+                  className="border border-success-subtle border-1 p-1 px-2"
+                  placeholder="dd/mm/yyyy"
+                  style={{
+                    fontSize: FONT_SIZE.S,
+                    borderRadius: 3,
+                    width: "100%",
+                  }}
+                />
+                <h6 className="date-text pt-3">End Date:</h6>
+                <input
+                  type="date"
+                  className="border border-success-subtle border-1 p-1 px-2"
+                  placeholder="dd/mm/yyyy"
+                  style={{
+                    fontSize: FONT_SIZE.S,
+                    borderRadius: 3,
+                    width: "100%",
+                  }}
+                />
+              </div>
+            }
+            OkText={"Submit"}
+            fieldsActive={true}
+            okOnClick={() => {}}
+          />
+          <TableContainer data={INITIAL_STATE} />
         </div>
       </div>
     </div>

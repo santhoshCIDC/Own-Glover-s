@@ -49,6 +49,7 @@ input::-webkit-inner-spin-button {
   padding-left: 10px;
   padding-right: 10px;
   border: none;
+  margin-block: auto;
 }
 .tabClicked {
   font-weight: bold !important;
@@ -97,4 +98,40 @@ input::-webkit-inner-spin-button {
   color: black !important;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.064);
 }
-
+.modal-contents {
+  align-items: center !important;
+  display: flex;
+  flex-direction: column;
+}
+.date-text {
+  display: flex !important;
+  justify-content: center;
+}
+.input-style :focus-visible {
+  outline-color: lightgrey !important;
+}
+.input-style {
+  border-color: #005dab !important;
+}
+.btn-primarys {
+  background-color: #005dab !important;
+  border-color: #005dab !important;
+  font-size: 14px !important;
+  color: white !important;
+}
+.btn-primary-disabled {
+  background-color: #005dab90 !important;
+  border: none !important;
+  font-size: 14px !important;
+  color: white !important;
+}
+.btn-close {
+  --bs-btn-close-focus-shadow: none !important;
+}
+.text_primary {
+  color: blue !important;
+  font-weight: bold !important;
+}
+.text_secondary {
+  color: black !important;
+}

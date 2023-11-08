@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import baseballGround from "../assets/bg.png";
 import { Button, Card } from "react-bootstrap";
-import { Icon } from "@iconify/react";
 import Utility, { ToastMessage } from "../utils/Utility";
 import { COLOR, FONT_SIZE } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../app/redux/services/AuthService";
 import { loader } from "../components/Loader";
+import InputContainer from "../components/InputContainer";
 
 const LoginScreen = () => {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ const LoginScreen = () => {
         navigate("/dashboard");
       }
     }
-  }, [isSuccess]);
+  }, [isSuccess, data, navigate]);
 
   const onClickLoginButton = async () => {
     if (email.trim().length === 0) {
@@ -86,54 +86,23 @@ const LoginScreen = () => {
           >
             <h3>Login</h3>
             <h6>Please enter the email and password</h6>
-            <div className="col-12">
+            <div className="col-12 mt-3">
               <div className="flex">
-                <input
-                  style={{
-                    height: 40,
-                    marginTop: 20,
-                    borderRadius: 8,
-                    borderWidth: 0.8,
-                    borderColor: COLOR.BLACK_COLOR,
-                    fontSize: FONT_SIZE.S,
-                  }}
+                <InputContainer
+                  placeholder={"Email"}
                   type={"email"}
-                  className="form-control"
-                  id="exampleFormControlInput1"
-                  placeholder="Email"
                   value={email}
                   onChange={(text) => setEmail(text.target.value)}
                 />
-                <div className="col-12">
+                <div className="col-12 my-3">
                   <div style={{ position: "relative" }}>
-                    <input
-                      style={{
-                        height: 40,
-                        marginTop: 20,
-                        marginBottom: 30,
-                        borderRadius: 8,
-                        borderWidth: 0.8,
-                        borderColor: COLOR.BLACK_COLOR,
-                        fontSize: FONT_SIZE.S,
-                      }}
-                      type={showPassword ? "text" : "password"}
-                      className="form-control"
-                      id="exampleFormControlInput2"
-                      placeholder="Password"
+                    <InputContainer
+                      placeholder={"Password"}
                       value={password}
                       onChange={(text) => setPassword(text.target.value)}
-                    />
-                    <Icon
-                      icon={showPassword ? "ion:eye" : "el:eye-close"}
-                      width="23"
-                      height="23"
-                      style={{
-                        position: "absolute",
-                        right: 10,
-                        top: 8,
-                        cursor: "pointer",
-                      }}
-                      onClick={togglePasswordVisibility}
+                      type={showPassword ? "text" : "password"}
+                      rightIcon={showPassword ? "ion:eye" : "el:eye-close"}
+                      onClickRightIcon={togglePasswordVisibility}
                     />
                   </div>
                 </div>
