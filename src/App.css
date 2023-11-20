@@ -42,7 +42,7 @@ input::-webkit-inner-spin-button {
   text-decoration-thickness: from-font;
 }
 .search-container {
-  background-color: #f5f5f5;
+  background-color: #f8f9fa;
   display: flex;
   align-items: center;
   border-radius: 20px;
@@ -134,4 +134,32 @@ input::-webkit-inner-spin-button {
 }
 .text_secondary {
   color: black !important;
+}
+.card_style1 {
+  background: linear-gradient(
+    to right bottom,
+    rgb(14, 209, 166),
+    rgb(44, 116, 0)
+  );
+}
+.card_style2 {
+  background: linear-gradient(
+    to right bottom,
+    rgb(242, 129, 175),
+    rgb(167, 46, 110)
+  );
+}
+.card_style3 {
+  background: linear-gradient(
+    to right bottom,
+    rgb(255, 184, 96),
+    rgb(197, 109, 0)
+  );
+}
+.card_style4 {
+  background: linear-gradient(
+    to right bottom,
+    rgb(180, 129, 255),
+    rgb(92, 6, 218)
+  );
 }

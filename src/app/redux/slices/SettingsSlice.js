@@ -4,7 +4,7 @@ import { ToastMessage } from "../../../app/utils/Utility";
 import { settingsService } from "../services/SettingsService";
 
 const initialState = {
-  settingsDetails: null,
+  settingsDetails: {},
 };
 
 export const SettingsSlice = createSlice({
@@ -16,7 +16,6 @@ export const SettingsSlice = createSlice({
       settingsService.endpoints.getSettings.matchFulfilled,
       (state, { payload }) => {
         if (payload.code === 0) {
-          console.log("Settings---->2", payload);
           state.settingsDetails = payload.data;
         } else {
           Utility.toastMessage(payload.message);

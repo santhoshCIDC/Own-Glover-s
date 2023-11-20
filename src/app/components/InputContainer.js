@@ -9,6 +9,7 @@ const InputContainer = ({
   rightIcon,
   onClickRightIcon,
   placeholder,
+  disabled,
 }) => {
   return (
     <div>
@@ -19,12 +20,14 @@ const InputContainer = ({
             outlineColor: "lightgrey",
             height: 35,
             borderRadius: 3,
+            backgroundColor: disabled ? "#e9ecef" : "white",
           }}
           type={type}
           className="w-100 p-1 border ps-2"
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          disabled={disabled}
         />
         <Icon
           icon={rightIcon}

@@ -16,7 +16,7 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
     <Navbar expand="sm">
       <Container className="d-flex flex-column p-0">
         <div className="d-flex">
-          <Navbar.Brand className="mt-3 mb-4" href="#home">
+          <Navbar.Brand className="mt-3 mb-4" href="/dashboard">
             <img src={logo} alt="hugenerd" style={{ width: "75%" }} />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -108,6 +108,7 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               }}
               onClick={() => {
                 setIsClicked("title3");
+                navigate("/teamsList");
               }}
             >
               <img

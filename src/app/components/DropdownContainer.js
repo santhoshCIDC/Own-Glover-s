@@ -12,7 +12,7 @@ const DropdownContainer = ({ editprofile, changepassword, logout }) => {
   const [showModal, setShowModal] = useState(false);
   return (
     <div>
-      <div className="dropdown">
+      <div className="dropdown me-md-3">
         <button
           className="btn dropdown-toggle d-flex align-items-center rounded-1 p-2 me-lg-3  "
           style={{
@@ -41,6 +41,7 @@ const DropdownContainer = ({ editprofile, changepassword, logout }) => {
               className="dropdown-item d-flex align-items-center"
               type="button"
               style={{ fontSize: FONT_SIZE.S }}
+              onClick={() => navigate("/editProfile")}
             >
               <img
                 src={IMAGES.user_Icon}
