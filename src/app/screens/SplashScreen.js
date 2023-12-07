@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../redux/store";
+// import { useAppSelector } from "../redux/store";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
 
-  const tokenDetails = useAppSelector((state) => state.auth.tokenDetails);
+  const tokenDetails = useSelector(
+    (state) => state.userState?.user?.token_details?.access_token
+  );
   useEffect(() => {
     setTimeout(() => {
       if (tokenDetails) {

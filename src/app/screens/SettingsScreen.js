@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useLazyGetSettingsQuery } from "../redux/services/SettingsService";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Header from "../components/Header";
+import { getSettingsDispatch } from "../redux/slices/SettingsSlice";
 
 const SettingScreen = () => {
-  const [getSettings] = useLazyGetSettingsQuery();
-  //Global State
+  const dispatch = useDispatch();
+  const [getSettings, { data, isLoading }] = useLazyGetSettingsQuery();
+  //global State
   const settingsDetails = useSelector(
-    (state) => state.settings.settingsDetails
+    (state) => state.settingsDetailsState.settingsDetails
   );
 
   //Local State
@@ -22,7 +24,13 @@ const SettingScreen = () => {
     getSettings({});
   }, [getSettings]);
 
-  //Initial render
+  useEffect(() => {
+    if (!isLoading && data?.code === 0) {
+      dispatch(getSettingsDispatch(data?.data));
+    }
+  }, [data?.code, isLoading]);
+
+  //initial render
   return (
     <div className="container-fluid h-100 p-0">
       <Header />

@@ -3,48 +3,21 @@ import baseballGround from "../assets/bg.png";
 import { Button, Card } from "react-bootstrap";
 import Utility, { ToastMessage } from "../utils/Utility";
 import { COLOR, FONT_SIZE } from "../utils/constants";
-import { useNavigate } from "react-router-dom";
 import { loader } from "../components/Loader";
 import InputContainer from "../components/InputContainer";
-import { useLoginUserMutation } from "../redux/services/AuthService";
+import { useNavigate } from "react-router-dom";
 
-const LoginScreen = () => {
+const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [login, { data, isLoading, isSuccess }] = useLoginUserMutation();
-
-  useEffect(() => {
-    if (data?.code === 0) {
-      if (isSuccess) {
-        navigate("/dashboard");
-      }
-    }
-  }, [isSuccess, data, navigate]);
-
-  const onClickLoginButton = async () => {
+  const onClickSubmitButton = () => {
     if (email.trim().length === 0) {
-      Utility.toastMessage("Please enter email");
+      Utility.toastMessage("Please enter email address");
     } else if (!Utility.validateEmail(email.trim())) {
       Utility.toastMessage("Please enter valid email");
-    } else if (password.trim().length === 0) {
-      Utility.toastMessage("Please enter password");
-    } else if (!Utility.validatePassword(password.trim())) {
-      Utility.toastMessage("Please enter valid password");
     } else {
-      let loginReq = {
-        email: email.trim().toLowerCase(),
-        password: password.trim(),
-      };
-      await login(loginReq);
     }
   };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
     <div
       className="flex-container"
@@ -84,27 +57,17 @@ const LoginScreen = () => {
               padding: 24,
             }}
           >
-            <h3>Login</h3>
-            <h6>Please enter the email and password</h6>
+            <h3>Forgot Password</h3>
+            <h6>Please enter the your email</h6>
             <div className="col-12 mt-3">
               <div className="flex">
-                <InputContainer
-                  placeholder={"Email"}
-                  type={"email"}
-                  value={email}
-                  onChange={(text) => setEmail(text.target.value)}
-                />
                 <div className="col-12 my-3">
-                  <div style={{ position: "relative" }}>
-                    <InputContainer
-                      placeholder={"Password"}
-                      value={password}
-                      onChange={(text) => setPassword(text.target.value)}
-                      type={showPassword ? "text" : "password"}
-                      rightIcon={showPassword ? "ion:eye" : "el:eye-close"}
-                      onClickRightIcon={togglePasswordVisibility}
-                    />
-                  </div>
+                  <InputContainer
+                    placeholder={"Email"}
+                    type={"email"}
+                    value={email}
+                    onChange={(text) => setEmail(text.target.value)}
+                  />
                 </div>
                 <Button
                   style={{
@@ -117,9 +80,9 @@ const LoginScreen = () => {
                     display: "flex",
                     justifyContent: "center",
                   }}
-                  onClick={onClickLoginButton}
+                  onClick={onClickSubmitButton}
                 >
-                  {isLoading ? (
+                  {false ? (
                     loader()
                   ) : (
                     <h5 style={{ fontSize: FONT_SIZE.S, display: "contents" }}>
@@ -135,9 +98,9 @@ const LoginScreen = () => {
                 textDecorationLine: "underline",
                 color: COLOR.APP_COLOR,
               }}
-              onClick={() => navigate("/forgotPassword")}
+              onClick={() => navigate("/login")}
             >
-              Forgot Password?
+              Login
             </h6>
           </Card>
         </Card>
@@ -148,4 +111,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default ForgotPassword;

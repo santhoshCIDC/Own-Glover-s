@@ -1,42 +1,34 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // You can choose a different storage engine if needed
+import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch, useSelector } from "react-redux";
+// services
+import { authService } from "./services/AuthService";
+import { settingsService } from "./services/SettingsService";
+import { teamsListService } from "./services/TeamsListService";
+// slices
+import userReducer from "../redux/slices/AuthSlice";
+import settingsDetailsReducer from "../redux/slices/SettingsSlice";
+import teamsListReducer from "../redux/slices/TeamsListSlice";
 
-import auth from "./slices/AuthSlice";
-import settings from "./slices/SettingsSlice";
-import { HTTPClient } from "../../app/utils/HttpsClient";
-
-// Define your reducers
-const rootReducer = combineReducers({
-  [HTTPClient.reducerPath]: HTTPClient.reducer,
-  auth,
-  settings,
-});
-
-// Configure Redux Persist
-const persistConfig = {
-  key: "root",
-  storage,
-  whitelist: ["auth", "settings"],
-};
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-const store = configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) => {
-    const middlewares = getDefaultMiddleware({
-      immutableCheck: { warnAfter: 128 },
-      serializableCheck: false,
-    }).concat(HTTPClient.middleware);
-    return middlewares;
+export const store = configureStore({
+  reducer: {
+    [authService.reducerPath]: authService.reducer,
+    [settingsService.reducerPath]: settingsService.reducer,
+    [teamsListService.reducerPath]: teamsListService.reducer,
+    userState: userReducer,
+    userTokenDetails: userReducer,
+    settingsDetailsState: settingsDetailsReducer,
+    teamsListState: teamsListReducer,
   },
+  devTools: process.env.NODE_ENV === "development",
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({}).concat([
+      authService.middleware,
+      settingsService.middleware,
+      teamsListService.middleware,
+    ]),
 });
 
-const persistor = persistStore(store);
-
-// Create a selector function for accessing the Redux state
-const useAppSelector = useSelector;
-
-export { store, persistor, useAppSelector };
+export var RootState = store.getState;
+export var AppDispatch = store.dispatch;
+export var useAppDispatch = useDispatch;
+export var useAppSelector = useSelector;

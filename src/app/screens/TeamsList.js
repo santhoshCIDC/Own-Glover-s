@@ -1,45 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
 import { Icon } from "@iconify/react";
 import TableContainer from "../components/TableContainer";
+import { useLazyGetTeamsListQuery } from "../redux/services/TeamsListService";
+import { useDispatch, useSelector } from "react-redux";
+import { getTeamsListDispatch } from "../redux/slices/TeamsListSlice";
+import CircleLoading from "../components/CircleLoading";
+
 
 const TeamsList = () => {
+  const dispatch = useDispatch();
   const [isSearch, setIsSearch] = useState("");
-  const INITIAL_STATE = [
-    {
-      sNo: "01",
-      teamName: "American",
-      teamType: "School",
-      ageGroup: "Middle School",
-      season: "Summer 2023-2024",
-      location: "Boston,MA",
-    },
-    {
-      sNo: "02",
-      teamName: "Arizona Diamondbacks",
-      teamType: "Local League / Rec / Other",
-      ageGroup: "Over 18",
-      season: "Summer 2023-2024",
-      location: "Las Cruces,NM",
-    },
-    {
-      sNo: "03",
-      teamName: "Astros",
-      teamType: "Local League / Rec / Other",
-      ageGroup: "Over 18",
-      season: "Spring 2023",
-      location: "Dallas,TX",
-    },
-    {
-      sNo: "04",
-      teamName: "Atlanta Braves",
-      teamType: "School",
-      ageGroup: "Elementary",
-      season: "Spring 2023",
-      location: "Seattle,WA",
-    },
-  ];
+  const [getTeamsList, { data, isLoading }] = useLazyGetTeamsListQuery();
+  const teamsList = useSelector((state) => state.teamsListState.teamsList);
+  const teamsListData = teamsList.map(({ game_type, ...rest }) => rest);
+
+  useEffect(() => {
+    getTeamsList();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && data?.code === 0) {
+      dispatch(getTeamsListDispatch(data?.data));
+    }
+  }, [data?.code, isLoading]);
+
   return (
     <div>
       <div className="container-fluid p-0">
@@ -99,7 +85,15 @@ const TeamsList = () => {
                 </div>
               </div>
             </div>
-            <TableContainer data={INITIAL_STATE} />
+            {isLoading ? <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ marginTop: "10%" }}
+            >
+              <CircleLoading />
+            </div> :
+              <TableContainer data={teamsListData} />
+            }
+
             {/* {eventsTabIndex === 0 ? (
               <LiveEventsList />
             ) : eventsTabIndex === 1 ? (

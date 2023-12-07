@@ -1,35 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { authService } from "../services/AuthService";
-import Utility from "../../utils/Utility";
-import { ToastMessage } from "../../../app/utils/Utility";
 
 const initialState = {
-  tokenDetails: null,
+  user: localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null,
+  tokenDetails: localStorage.getItem("tokenDetails")
+    ? JSON.parse(localStorage.getItem("tokenDetails"))
+    : null,
 };
 
 export const authSlice = createSlice({
-  name: "auth",
   initialState,
+  name: "user",
   reducers: {
     isLogout: (state, action) => {
-      state.tokenDetails = null;
+      localStorage.removeItem("tokenDetails");
+      return {  tokenDetails: null };
     },
-  },
-  extraReducers: (builder) => {
-    builder.addMatcher(
-      authService.endpoints.login.matchFulfilled,
-      (state, { payload }) => {
-        if (payload.code === 0) {
-          state.tokenDetails = payload.data.token_details;
-        } else {
-          Utility.toastMessage(payload.message);
-          return { ToastMessage };
-        }
-      }
-    );
+    setUserDetails: (state, action) => {
+      localStorage.setItem("user", JSON.stringify(action.payload?.user));
+      localStorage.setItem(
+        "tokenDetails",
+        JSON.stringify(action.payload?.token_details)
+      );
+      state.user = action.payload?.user;
+      state.tokenDetails = action.payload?.token_details;
+    },
+    editProfileDispatch: (state, action) => {
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      state.user = action.payload;
+    },
   },
 });
 
-export const { isLogout } = authSlice.actions;
-
 export default authSlice.reducer;
+
+export const { isLogout, setUserDetails, editProfileDispatch } =
+  authSlice.actions;
+export const currentUser = (state) => state.userState.user;

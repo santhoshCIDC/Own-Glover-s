@@ -8,7 +8,7 @@ import { store } from "./app/redux/store";
 function App() {
 
   return (
-    <div className="App min-vh-100 vh-100">
+    <div className="App">
       <Provider store={store}>
           <MainRoutes />
       </Provider>

@@ -1,31 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
-import Utility from "../../utils/Utility";
-import { ToastMessage } from "../../../app/utils/Utility";
-import { settingsService } from "../services/SettingsService";
 
 const initialState = {
-  settingsDetails: {},
+  settingsDetails: localStorage.getItem("settings")
+    ? JSON.parse(localStorage.getItem("settings"))
+    : null,
 };
 
-export const SettingsSlice = createSlice({
-  name: "settings",
+export const settingsSlice = createSlice({
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addMatcher(
-      settingsService.endpoints.getSettings.matchFulfilled,
-      (state, { payload }) => {
-        if (payload.code === 0) {
-          state.settingsDetails = payload.data;
-        } else {
-          Utility.toastMessage(payload.message);
-          return { ToastMessage };
-        }
-      }
-    );
+  name: "settings",
+  reducers: {
+    getSettingsDispatch: (state, action) => {
+      localStorage.setItem("settings", JSON.stringify(action.payload));
+      state.settingsDetails = action.payload;
+    },
   },
 });
 
-export const {} = SettingsSlice.actions;
+export default settingsSlice.reducer;
 
-export default SettingsSlice.reducer;
+export const { getSettingsDispatch } = settingsSlice.actions;

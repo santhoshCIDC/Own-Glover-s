@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import SplashScreen from "../screens/SplashScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ProtectedRoute from "./ProtectedRoute";
@@ -7,21 +9,22 @@ import DashboardScreen from "../screens/DashboardScreen";
 import UserListScreen from "../screens/UserListScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import SeasonsScreen from "../screens/SeasonsScreen";
-
-import { useAppSelector } from "../redux/store";
 import ChangePassword from "../screens/ChangePassword";
 import EventsList from "../screens/EventsList/EventsList";
 import TeamsList from "../screens/TeamsList";
 import EditProfileScreen from "../screens/Profile/EditProfileScreen";
+import ForgotPassword from "../screens/ForgotPassword";
 
 const MainRoutes = () => {
-  const tokenDetails = useAppSelector((state) => state.auth.tokenDetails);
-
+  const tokenDetails = useSelector(
+    (state) => state.userTokenDetails?.tokenDetails?.access_token
+  );
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SplashScreen />} />
         <Route path="/login" element={<LoginScreen />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route
           path="/dashboard"
           element={
@@ -71,7 +74,7 @@ const MainRoutes = () => {
           }
         />
         <Route
-          path="/changepassword"
+          path="/changePassword"
           element={
             <ProtectedRoute auth={tokenDetails}>
               <ChangePassword />
