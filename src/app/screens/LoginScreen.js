@@ -19,7 +19,10 @@ const LoginScreen = () => {
     if (data?.code === 0) {
       if (isSuccess) {
         navigate("/dashboard");
-      }
+        Utility.toastMessage("Login successfully");
+      } 
+    } else {
+      Utility.toastMessage(data?.message);
     }
   }, [isSuccess, data, navigate]);
 

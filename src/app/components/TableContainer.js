@@ -14,21 +14,21 @@ const TableContainer = ({ data }) => {
   const [seasonName, setSeasonName] = useState("");
 
   const [page, setPage] = useState({
-    currentPageForLive: 1,
+    currentPageForTeamList: 1,
   });
 
   const paginate = (number, type) => {
-    if (type === "live") {
-      setPage({ ...page, currentPageForLive: number });
+    if (type === "TeamList") {
+      setPage({ ...page, currentPageForTeamList: number });
     }
   };
 
-  const indexOfLastPostForLive = page.currentPageForLive * itemsPerPage;
-  const indexOfFirstPostForLive = indexOfLastPostForLive - itemsPerPage;
+  const indexOfLastPostForTeamList = page.currentPageForTeamList * itemsPerPage;
+  const indexOfFirstPostForTeamList = indexOfLastPostForTeamList - itemsPerPage;
 
   const renderSeasonsList = () => {
     return data
-      .slice(indexOfFirstPostForLive, indexOfLastPostForLive)
+      .slice(indexOfFirstPostForTeamList, indexOfLastPostForTeamList)
       .map((item, index) => (
         <tr
           key={index}
@@ -38,21 +38,21 @@ const TableContainer = ({ data }) => {
         >
           {Object.keys(item).map((key) => (
             <td
-              className={`ps-2 ${key === "Progress" || key === "Result"
-                ? "text_primary"
-                : "text_secondary"
-                }`}
+              className={`ps-2 ${
+                key === "Progress" || key === "Result"
+                  ? "text_primary"
+                  : "text_secondary"
+              }`}
             >
-              {key === "_id" ?
+              {key === "_id" ? (
                 <>
-                  {(
-                    (page?.currentPageForLive - 1) * 10 +
-                    index +
-                    1
-                  )
+                  {((page?.currentPageForTeamList - 1) * 10 + index + 1)
                     .toString()
                     .padStart(2, "0")}
-                </> : item[key]}
+                </>
+              ) : (
+                item[key]
+              )}
               {key === "update" ? (
                 <img
                   onClick={() => {
@@ -159,7 +159,7 @@ const TableContainer = ({ data }) => {
         }
         OkText={"Submit"}
         fieldsActive={true}
-        okOnClick={() => { }}
+        okOnClick={() => {}}
       />
       <RenderModal
         show={deleteShowModal}
@@ -169,17 +169,33 @@ const TableContainer = ({ data }) => {
         OkText={"Delete"}
         CancelText={"Cancel"}
         logoutModal={true}
-        okOnClick={() => { }}
+        okOnClick={() => {}}
       />
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginTop: "10px",
+        }}
+      >
         <Pagination
           itemsPerPage={itemsPerPage}
           totalItems={data?.length}
           paginate={paginate}
-          currentPage={page?.currentPageForLive}
-          type="live"
-          setPrevBtn={() => setPage({ ...page, currentPageForLive: page.currentPageForLive - 1 })}
-          setNextBtn={() => setPage({ ...page, currentPageForLive: page.currentPageForLive + 1 })}
+          currentPage={page?.currentPageForTeamList}
+          type="TeamList"
+          setPrevBtn={() =>
+            setPage({
+              ...page,
+              currentPageForTeamList: page.currentPageForTeamList - 1,
+            })
+          }
+          setNextBtn={() =>
+            setPage({
+              ...page,
+              currentPageForTeamList: page.currentPageForTeamList + 1,
+            })
+          }
         />
       </div>
     </div>
