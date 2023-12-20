@@ -4,6 +4,7 @@ import {
   EDIT_PROFILE,
   FORGOT_PASSWORD,
   LOGIN,
+  REFRESH_TOKEN,
 } from "../../utils/URL";
 import HttpsClient from "../../utils/HttpsClient";
 import { logout, setUserDetails } from "../slices/AuthSlice";
@@ -24,6 +25,13 @@ export const authService = createApi({
           dispatch(setUserDetails(data.data));
         } catch (error) {}
       },
+    }),
+    refreshToken: builder.mutation({
+      query: (body) => ({
+        url: REFRESH_TOKEN,
+        method: "POST",
+        body,
+      }),
     }),
     // logoutUser: builder.mutation({
     //   query: (body) => ({
@@ -68,4 +76,5 @@ export const {
   useForgotPasswordMutation,
   useChangePasswordMutation,
   useEditProfileMutation,
+  useRefreshTokenMutation,
 } = authService;

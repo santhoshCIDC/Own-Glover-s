@@ -121,6 +121,7 @@ const LoginScreen = () => {
                     justifyContent: "center",
                   }}
                   onClick={onClickLoginButton}
+                  disabled={isLoading ? true : false}
                 >
                   {isLoading ? (
                     loader()

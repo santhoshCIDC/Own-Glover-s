@@ -15,7 +15,7 @@ export const authSlice = createSlice({
   reducers: {
     isLogout: (state, action) => {
       localStorage.removeItem("tokenDetails");
-      return {  tokenDetails: null };
+      state.tokenDetails = null;
     },
     setUserDetails: (state, action) => {
       localStorage.setItem("user", JSON.stringify(action.payload?.user));
@@ -24,6 +24,10 @@ export const authSlice = createSlice({
         JSON.stringify(action.payload?.token_details)
       );
       state.user = action.payload?.user;
+      state.tokenDetails = action.payload?.token_details;
+    },
+    setRefreshToken: (state, action) => {
+      localStorage.setItem("tokenDetails", JSON.stringify(action?.payload?.token_details));
       state.tokenDetails = action.payload?.token_details;
     },
     editProfileDispatch: (state, action) => {
@@ -35,6 +39,10 @@ export const authSlice = createSlice({
 
 export default authSlice.reducer;
 
-export const { isLogout, setUserDetails, editProfileDispatch } =
-  authSlice.actions;
+export const {
+  isLogout,
+  setUserDetails,
+  editProfileDispatch,
+  setRefreshToken,
+} = authSlice.actions;
 export const currentUser = (state) => state.userState.user;

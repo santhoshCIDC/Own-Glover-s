@@ -3,6 +3,7 @@ import { useLazyGetSettingsQuery } from "../redux/services/SettingsService";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../components/Header";
 import { getSettingsDispatch } from "../redux/slices/SettingsSlice";
+import CircleLoading from "../components/CircleLoading";
 
 const SettingScreen = () => {
   const dispatch = useDispatch();
@@ -50,91 +51,104 @@ const SettingScreen = () => {
             Event Creation
           </h6>
         </button>
-        <div className="table-responsive">
-          <table className="mb-0">
-            <thead>
-              <tr>
-                <th
-                  className="settings_th py-3"
-                  style={{ width: "350px" }}
-                  scope="col"
-                >
-                  Type
-                </th>
-                <th
-                  className="settings_th"
-                  scope="col"
-                  style={{ width: "100px" }}
-                >
-                  Value
-                </th>
-                <th className="settings_th" scope="col">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="settings_th">Number of Players for team</td>
-                <td className="settings_th">
-                  <input
-                    className="my-4 border-1"
-                    type="number"
-                    min={"1"}
-                    max={"9"}
-                    style={{ width: 25, paddingLeft: 2 }}
-                    value={noofPlayers}
-                    onChange={(text) => setNoofPlayers(text.target.value)}
-                  />
-                </td>
-                <td className="settings_th">
-                  <button className="btn btn-success px-3 py-1">
-                    <h6 className="mb-0 fw-bold">Submit</h6>
-                  </button>
-                </td>
-                <td className="px-3">
-                  <button
-                    className="btn btn-danger align-items-center d-flex flex-column"
-                    style={{ height: 30, width: 30 }}
-                    onClick={() => setNoofPlayers("")}
+        {isLoading ? (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+            }}
+          >
+            <CircleLoading />
+          </div>
+        ) : (
+          <div className="table-responsive">
+            <table className="mb-0">
+              <thead>
+                <tr>
+                  <th
+                    className="settings_th py-3"
+                    style={{ width: "350px" }}
+                    scope="col"
                   >
-                    <h6 className="mb-0 fw-bold">X</h6>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className="settings_th">
-                  Number of Staff + Coaches for team
-                </td>
-                <td className="settings_th">
-                  <input
-                    className="my-3 border-1"
-                    type="number"
-                    min={"1"}
-                    max={"2"}
-                    style={{ width: 25, paddingLeft: 2 }}
-                    value={noofStaffs}
-                    onChange={(text) => setNoofStaffs(text.target.value)}
-                  />
-                </td>
-                <td className="settings_th">
-                  <button className="btn btn-success px-3 py-1">
-                    <h6 className="mb-0 fw-bold">Submit</h6>
-                  </button>
-                </td>
-                <td className="px-3">
-                  <button
-                    className="btn btn-danger align-items-center d-flex flex-column"
-                    style={{ height: 30, width: 30 }}
-                    onClick={() => setNoofStaffs("")}
+                    Type
+                  </th>
+                  <th
+                    className="settings_th"
+                    scope="col"
+                    style={{ width: "100px" }}
                   >
-                    <h6 className="mb-0 fw-bold">X</h6>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                    Value
+                  </th>
+                  <th className="settings_th" scope="col">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="settings_th">Number of Players for team</td>
+                  <td className="settings_th">
+                    <input
+                      className="my-4 border-1"
+                      type="number"
+                      min={"1"}
+                      max={"9"}
+                      style={{ width: 25, paddingLeft: 2 }}
+                      value={noofPlayers}
+                      onChange={(text) => setNoofPlayers(text.target.value)}
+                    />
+                  </td>
+                  <td className="settings_th">
+                    <button className="btn btn-success px-3 py-1">
+                      <h6 className="mb-0 fw-bold">Submit</h6>
+                    </button>
+                  </td>
+                  <td className="px-3">
+                    <button
+                      className="btn btn-danger align-items-center d-flex flex-column"
+                      style={{ height: 30, width: 30 }}
+                      onClick={() => setNoofPlayers("")}
+                    >
+                      <h6 className="mb-0 fw-bold">X</h6>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="settings_th">
+                    Number of Staff + Coaches for team
+                  </td>
+                  <td className="settings_th">
+                    <input
+                      className="my-3 border-1"
+                      type="number"
+                      min={"1"}
+                      max={"2"}
+                      style={{ width: 25, paddingLeft: 2 }}
+                      value={noofStaffs}
+                      onChange={(text) => setNoofStaffs(text.target.value)}
+                    />
+                  </td>
+                  <td className="settings_th">
+                    <button className="btn btn-success px-3 py-1">
+                      <h6 className="mb-0 fw-bold">Submit</h6>
+                    </button>
+                  </td>
+                  <td className="px-3">
+                    <button
+                      className="btn btn-danger align-items-center d-flex flex-column"
+                      style={{ height: 30, width: 30 }}
+                      onClick={() => setNoofStaffs("")}
+                    >
+                      <h6 className="mb-0 fw-bold">X</h6>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

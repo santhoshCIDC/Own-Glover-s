@@ -194,6 +194,16 @@ input::-webkit-inner-spin-button {
   top: 37px;
   left: 22px;
 }
+.active>.page-link, .page-link.active {
+  z-index: 3;
+  color: var(--bs-pagination-active-color);
+  background-color: #005dab !important;
+  border-color: #005dab !important;
+  cursor:  pointer !important;
+}
+.page-link{
+  font-size: 13px !important;
+}
 @keyframes loader-rotate {
   0% {
     transform: skew(20deg, 20deg) rotate(0deg);

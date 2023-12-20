@@ -10,3 +10,5 @@ export const CHANGE_PASSWORD = "v1/auth/changePassword";
 export const EDIT_PROFILE = "v1/user/profile-update";
 export const FORGOT_PASSWORD = "v1/auth/forgotPassword";
 export const GET_TEAMS_LIST = "/v1/user/admin/teams-list?search=";
+export const GET_SEASON_LIST = "/v1/user/season";
+export const GET_EVENT_LIST = "v1/user/admin/events-tabs?";

@@ -1,5 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { GET_TEAMS_LIST } from "../../utils/URL";
+import {
+  GET_EVENT_LIST,
+  GET_SEASON_LIST,
+  GET_TEAMS_LIST,
+} from "../../utils/URL";
 import HttpsClient from "../../utils/HttpsClient";
 
 export const teamsListService = createApi({
@@ -12,6 +16,23 @@ export const teamsListService = createApi({
         method: "GET",
       }),
     }),
+    getSeasonList: builder.query({
+      query: () => ({
+        url: GET_SEASON_LIST,
+        method: "GET",
+      }),
+    }),
+    getEventsList: builder.query({
+      query: (params) => ({
+        url: GET_EVENT_LIST,
+        method: "GET",
+        params: params,
+      }),
+    }),
   }),
 });
-export const { useLazyGetTeamsListQuery } = teamsListService;
+export const {
+  useLazyGetTeamsListQuery,
+  useLazyGetSeasonListQuery,
+  useLazyGetEventsListQuery,
+} = teamsListService;
