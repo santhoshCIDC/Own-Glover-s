@@ -34,17 +34,33 @@ const Pagination = ({
             Previous
           </a>
         </li>
-        {pageNumbers.map((number, i) => (
-          <li
-            key={i}
-            className={`page-item cursor-pointer ${
-              currentPage === number && "active"
-            }`}
-            onClick={() => paginate(number, type)}
-          >
-            <a className="page-link">{number}</a>
-          </li>
-        ))}
+        {pageNumbers.map((number) => {
+          // Show only the first and last three pages, and add an ellipsis for the middle pages
+          if (
+            number === 1 ||
+            number === pageNumbers.length ||
+            (number >= currentPage - 1 && number <= currentPage + 1)
+          ) {
+            return (
+              <li
+                key={number}
+                className={`page-item cursor-pointer ${
+                  currentPage === number && "active"
+                }`}
+                onClick={() => paginate(number, type)}
+              >
+                <a className="page-link">{number}</a>
+              </li>
+            );
+          } else if (number === currentPage - 2 || number === currentPage + 2) {
+            return (
+              <li className="page-link" key={number}>
+                ...
+              </li>
+            );
+          }
+          return null;
+        })}
         <li
           className={`page-item ${
             currentPage === pageNumbers.length ? "disabled" : "cursor-pointer"

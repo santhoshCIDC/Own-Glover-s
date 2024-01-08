@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { FONT_SIZE } from "../utils/constants";
 import Header from "../components/Header";
 import RenderModal from "../components/RenderModal";
-import { useLazyGetSeasonListQuery } from "../redux/services/TeamsListService";
+import {
+  useDeleteSeasonMutation,
+  useLazyGetSeasonListQuery,
+  useSeasonCreateMutation,
+} from "../redux/services/TeamsListService";
 import { useDispatch, useSelector } from "react-redux";
 import { getSeasonsListDispatch } from "../redux/slices/TeamsListSlice";
 import CircleLoading from "../components/CircleLoading";
@@ -10,31 +14,48 @@ import { IMAGES } from "../utils/SharedImages";
 import Tooltip from "../components/Tooltip";
 import moment from "moment";
 import Pagination from "../components/Pagination";
+import Utility, { ToastMessage } from "../utils/Utility";
 
 const SeasonsScreen = () => {
   const itemsPerPage = 10;
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
   const [deleteShowModal, setDeleteShowModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [season, setSeason] = useState("");
-  const [seasonName, setSeasonName] = useState("");
+  const [seasonItem, setSeasonItem] = useState("");
   const [page, setPage] = useState({
     currentPageForSeasonList: 1,
   });
-  const [getSeasonList, { isLoading, data }] = useLazyGetSeasonListQuery();
+  const [getSeasonList, { isLoading: isGetSeasonLoading, data, isFetching }] =
+    useLazyGetSeasonListQuery();
+  const [deleteSeason, { data: isDeleteSeason, isLoading: isDeleteLoading }] =
+    useDeleteSeasonMutation();
+  const [
+    seasonCreate,
+    { data: isSeasonCreateData, isLoading: isSeasonCreateLoading },
+  ] = useSeasonCreateMutation();
   const seasonList = useSelector((state) => state.teamsListState.seasonList);
 
   useEffect(() => {
     getSeasonList();
-  }, [getSeasonList]);
+    if (isSeasonCreateData?.code === 0) {
+      Utility.toastMessage(isSeasonCreateData?.data);
+    } else {
+      Utility.toastMessage(isSeasonCreateData?.message);
+    }
+    if (isDeleteSeason?.code === 0) {
+      Utility.toastMessage("Season was deleted successfully");
+    }
+  }, [getSeasonList, isSeasonCreateData, isDeleteSeason]);
 
   useEffect(() => {
-    if (!isLoading && data?.code === 0) {
+    if ((!isGetSeasonLoading && data?.code === 0) || isFetching) {
       dispatch(getSeasonsListDispatch(data?.data));
     }
-  }, [data?.code, isLoading]);
+  }, [data?.code, isGetSeasonLoading, isFetching]);
 
   const onClickEdit = (item) => {
     setShowModal(true);
@@ -42,11 +63,46 @@ const SeasonsScreen = () => {
     setStartDate(moment(item.start_date).format("YYYY-MM-DD"));
     setSeason(item.values);
   };
+
   const onClickCreateSeason = () => {
     setShowModal(true);
     setEndDate(null);
     setStartDate(null);
     setSeason("");
+  };
+
+  const onClickSubmit = async () => {
+    if (editModal) {
+      setTimeout(async () => {
+        await seasonCreate({
+          season_id: seasonItem._id,
+          name: season,
+          start_date: startDate,
+          end_date: endDate,
+        });
+        setEditModal(false);
+        getSeasonList();
+      }, 100);
+      setShowModal(false);
+    } else {
+      setTimeout(async () => {
+        await seasonCreate({
+          name: season,
+          start_date: startDate,
+          end_date: endDate,
+        });
+        getSeasonList();
+      }, 100);
+      setShowModal(false);
+    }
+  };
+
+  const onClickDeleteSeason = async () => {
+    setTimeout(async () => {
+      await deleteSeason({ season_id: seasonItem?._id });
+      getSeasonList();
+    }, 100);
+    setDeleteShowModal(false);
   };
 
   const paginate = (number, type) => {
@@ -131,22 +187,25 @@ const SeasonsScreen = () => {
                 />
               </div>
             }
-            OkText={"Submit"}
+            OkText={editModal ? "Update" : "Submit"}
             fieldsActive={true}
-            okOnClick={() => {}}
+            okOnClick={() => onClickSubmit()}
           />
           <RenderModal
             show={deleteShowModal}
             onHide={() => setDeleteShowModal(false)}
             closeBtnOnClick={() => setDeleteShowModal(false)}
-            modalbody={`Are you sure you want to delete the ${seasonName.values}?`}
+            modalbody={`Are you sure you want to delete the ${seasonItem.values}?`}
             OkText={"Delete"}
             CancelText={"Cancel"}
             logoutModal={true}
-            okOnClick={() => {}}
+            okOnClick={() => {
+              onClickDeleteSeason();
+            }}
             cancelOnClick={() => setDeleteShowModal(false)}
           />
-          {isLoading ? (
+          {!showModal &&
+          (isGetSeasonLoading || isDeleteLoading || isSeasonCreateLoading) ? (
             <div
               className="d-flex justify-content-center align-items-center"
               style={{ position: "absolute", left: "50%", top: "50%" }}
@@ -157,7 +216,7 @@ const SeasonsScreen = () => {
             <>
               {seasonList !== undefined && seasonList !== null && (
                 <>
-                  {seasonList?.Season.length === 0 ? (
+                  {seasonList?.Season?.length === 0 ? (
                     <h6
                       style={{
                         justifyContent: "center",
@@ -224,7 +283,7 @@ const SeasonsScreen = () => {
                             </th>
                           </tr>
                           <tbody>
-                            {seasonList?.Season.slice(
+                            {seasonList?.Season?.slice(
                               indexOfFirstPostForSeasonList,
                               indexOfLastPostForSeasonList
                             ).map((item, index) => (
@@ -248,6 +307,8 @@ const SeasonsScreen = () => {
                                   <img
                                     onClick={() => {
                                       onClickEdit(item);
+                                      setSeasonItem(item);
+                                      setEditModal(true);
                                     }}
                                     style={{
                                       height: 15,
@@ -262,7 +323,7 @@ const SeasonsScreen = () => {
                                 <td>
                                   <img
                                     onClick={() => {
-                                      setSeasonName(item);
+                                      setSeasonItem(item);
                                       setDeleteShowModal(true);
                                     }}
                                     style={{
@@ -334,6 +395,7 @@ const SeasonsScreen = () => {
           )}
         </div>
       </div>
+      {ToastMessage()}
     </div>
   );
 };

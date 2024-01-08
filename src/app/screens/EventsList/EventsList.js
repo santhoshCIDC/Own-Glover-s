@@ -24,13 +24,13 @@ const EventsList = () => {
 
   useEffect(() => {
     getEventsList({ search: isSearch, type: eventsType });
-  }, [getEventsList, isSearch]);
+  }, [getEventsList, isSearch, eventsType]);
 
   useEffect(() => {
     if (!isLoading && data?.code === 0) {
       dispatch(getEventsListDispatch(data?.data));
     }
-  }, [data?.code, isLoading]);
+  }, [data?.code, isLoading, isFetching]);
 
   return (
     <div>
@@ -85,19 +85,77 @@ const EventsList = () => {
                     }}
                     CloseBtnOnClick={() => setIsSearch("")}
                   />
-                  <button
-                    type="button"
-                    className="btn d-flex btn-primary mt-lg-0 mt-2 ms-3"
-                    style={{ alignSelf: "center", flex: "none" }}
-                  >
-                    <Icon
-                      icon="ion:document-text-outline"
-                      color="white"
-                      width="16"
-                      height="16"
-                    />
-                    <h6 className="mb-0 ms-2">Export Report</h6>
-                  </button>
+                  <div class="dropdown">
+                    <button
+                      type="button"
+                      className="btn d-flex btn-primary mt-lg-0 mt-2 ms-3"
+                      style={{ alignSelf: "center", flex: "none", padding: 10 }}
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <Icon
+                        icon="ion:document-text-outline"
+                        color="white"
+                        width="16"
+                        height="16"
+                      />
+                      <h6 className="mb-0 ms-2">Export Report</h6>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <div className="d-flex ms-2 p-1">
+                          <Icon
+                            className="mt-1"
+                            icon="iwwa:file-csv"
+                            color="black"
+                            width="27"
+                            height="27"
+                          />
+                          <div
+                            className="p-2 d-flex"
+                            style={{
+                              color: "#0056b3",
+                              backgroundColor: "#80808020",
+                            }}
+                          >
+                            <h6 className="mb-0">CSV format</h6>
+                            <Icon
+                              icon="foundation:arrow-down"
+                              color="#0056b3"
+                              width="16"
+                              height="16"
+                            />
+                          </div>
+                        </div>
+                      </li>
+                      <li>
+                        <div className="d-flex ms-2 p-1">
+                          <Icon
+                            className="mt-1"
+                            icon="iwwa:file-pdf"
+                            color="#575757"
+                            width="27"
+                            height="27"
+                          />
+                          <div
+                            className="p-2 d-flex"
+                            style={{
+                              color: "#575757",
+                              backgroundColor: "#80808020",
+                            }}
+                          >
+                            <h6 className="mb-0">PDF format</h6>
+                            <Icon
+                              icon="foundation:arrow-down"
+                              color="black"
+                              width="16"
+                              height="16"
+                            />
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -248,7 +306,7 @@ const EventsList = () => {
                                       </th>
                                     </tr>
                                     <tbody>
-                                      {eventsList.recent.map((item, index) => (
+                                      {eventsList.live.map((item, index) => (
                                         <tr
                                           key={index}
                                           style={{
@@ -268,20 +326,12 @@ const EventsList = () => {
                                           <td>{item.opponent_team}</td>
                                           <td>{item.location}</td>
                                           <td
-                                            className={`ps-2 ${
-                                              item.progress === "Completed"
-                                                ? "text_primary"
-                                                : "text_secondary"
-                                            }`}
+                                            className="ps-2 text_red_color"
                                           >
                                             {item.progress}
                                           </td>
                                           <td
-                                            className={`${
-                                              item.game_status === "END"
-                                                ? "text_primary"
-                                                : "text_secondary"
-                                            }`}
+                                            className="text_red_color"
                                           >
                                             {item.game_status}
                                           </td>
@@ -636,59 +686,61 @@ const EventsList = () => {
                                       </th>
                                     </tr>
                                     <tbody>
-                                      {eventsList.recent.map((item, index) => (
-                                        <tr
-                                          key={index}
-                                          style={{
-                                            fontSize: FONT_SIZE.S,
-                                          }}
-                                        >
-                                          <td>
-                                            {(index + 1)
-                                              .toString()
-                                              .padStart(2, "0")}
-                                          </td>
-                                          <td>{item.event_type}</td>
-                                          <td>
-                                            {item.scrimmage ? "Yes" : "No"}
-                                          </td>
-                                          <td>{item.playing_team}</td>
-                                          <td>{item.opponent_team}</td>
-                                          <td>{item.location}</td>
-                                          <td
-                                            className={`ps-2 ${
-                                              item.progress === "Completed"
-                                                ? "text_primary"
-                                                : "text_secondary"
-                                            }`}
+                                      {eventsList.upcoming.map(
+                                        (item, index) => (
+                                          <tr
+                                            key={index}
+                                            style={{
+                                              fontSize: FONT_SIZE.S,
+                                            }}
                                           >
-                                            {item.progress}
-                                          </td>
-                                          <td
-                                            className={`${
-                                              item.game_status === "END"
-                                                ? "text_primary"
-                                                : "text_secondary"
-                                            }`}
-                                          >
-                                            {item.game_status}
-                                          </td>
-                                          <td>
-                                            {new Date(
-                                              item.game_start_date
-                                            ).toLocaleDateString()}
-                                          </td>
-                                          <td>
-                                            {new Date(
-                                              item.game_start_date
-                                            ).toLocaleTimeString("en-US", {
-                                              hour: "2-digit",
-                                              minute: "2-digit",
-                                              hour12: true,
-                                            })}
-                                          </td>
-                                        </tr>
-                                      ))}
+                                            <td>
+                                              {(index + 1)
+                                                .toString()
+                                                .padStart(2, "0")}
+                                            </td>
+                                            <td>{item.event_type}</td>
+                                            <td>
+                                              {item.scrimmage ? "Yes" : "No"}
+                                            </td>
+                                            <td>{item.playing_team}</td>
+                                            <td>{item.opponent_team}</td>
+                                            <td>{item.location}</td>
+                                            <td
+                                              className={`ps-2 ${
+                                                item.progress === "Completed"
+                                                  ? "text_primary"
+                                                  : "text_secondary"
+                                              }`}
+                                            >
+                                              {item.progress}
+                                            </td>
+                                            <td
+                                              className={`${
+                                                item.game_status === "END"
+                                                  ? "text_primary"
+                                                  : "text_secondary"
+                                              }`}
+                                            >
+                                              {item.game_status}
+                                            </td>
+                                            <td>
+                                              {new Date(
+                                                item.game_start_date
+                                              ).toLocaleDateString()}
+                                            </td>
+                                            <td>
+                                              {new Date(
+                                                item.game_start_date
+                                              ).toLocaleTimeString("en-US", {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                hour12: true,
+                                              })}
+                                            </td>
+                                          </tr>
+                                        )
+                                      )}
                                     </tbody>
                                   </table>
                                 </div>
@@ -702,7 +754,6 @@ const EventsList = () => {
                 ) : null}
               </>
             )}
-        
           </div>
         </div>
       </div>

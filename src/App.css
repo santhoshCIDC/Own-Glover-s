@@ -135,6 +135,10 @@ input::-webkit-inner-spin-button {
 .text_secondary {
   color: black !important;
 }
+.text_red_color {
+  color: red !important;
+  font-weight: bold !important;
+}
 .card_style1 {
   background: linear-gradient(
     to right bottom,
@@ -194,15 +198,30 @@ input::-webkit-inner-spin-button {
   top: 37px;
   left: 22px;
 }
-.active>.page-link, .page-link.active {
+.active > .page-link,
+.page-link.active {
   z-index: 3;
   color: var(--bs-pagination-active-color);
   background-color: #005dab !important;
   border-color: #005dab !important;
-  cursor:  pointer !important;
+  cursor: pointer !important;
 }
-.page-link{
+.page-link {
   font-size: 13px !important;
+}
+.table-row-active {
+  background-color: #e6e6fa !important;
+}
+.table-row-deactive {
+  background-color: #f7f5ff !important;
+}
+.custom-popover {
+  --bs-popover-max-width: 200px;
+  --bs-popover-border-color: var(--bd-violet-bg);
+  --bs-popover-header-bg: var(--bd-violet-bg);
+  --bs-popover-header-color: var(--bs-white);
+  --bs-popover-body-padding-x: 1rem;
+  --bs-popover-body-padding-y: .5rem;
 }
 @keyframes loader-rotate {
   0% {
