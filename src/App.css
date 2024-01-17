@@ -50,6 +50,20 @@ input::-webkit-inner-spin-button {
   padding-right: 10px;
   border: none;
   margin-block: auto;
+  width: 40vh;
+}
+@media (max-width: 425px) {
+  .search-container {
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: none;
+    margin-block: auto;
+    width: 30vh;
+  }
 }
 .tabClicked {
   font-weight: bold !important;
@@ -74,6 +88,17 @@ input::-webkit-inner-spin-button {
 .active-text-color {
   border-bottom-color: #005dab;
   border-bottom-style: solid;
+}
+.active-tab {
+  background-color: #005dab !important;
+}
+.active-text-tab {
+  color: white !important;
+  font-size: 12px !important;
+}
+.deActive-text-tab {
+  color: blueviolet !important;
+  font-size: 12px !important;
 }
 .settings_th {
   font-size: 14px !important;
@@ -221,7 +246,7 @@ input::-webkit-inner-spin-button {
   --bs-popover-header-bg: var(--bd-violet-bg);
   --bs-popover-header-color: var(--bs-white);
   --bs-popover-body-padding-x: 1rem;
-  --bs-popover-body-padding-y: .5rem;
+  --bs-popover-body-padding-y: 0.5rem;
 }
 @keyframes loader-rotate {
   0% {

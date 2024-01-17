@@ -217,13 +217,7 @@ const SeasonsScreen = () => {
               {seasonList !== undefined && seasonList !== null && (
                 <>
                   {seasonList?.Season?.length === 0 ? (
-                    <h6
-                      style={{
-                        justifyContent: "center",
-                        display: "flex",
-                        marginBottom: "10px",
-                      }}
-                    >
+                    <h6 className="my-3 d-flex justify-content-center">
                       No live events found
                     </h6>
                   ) : (

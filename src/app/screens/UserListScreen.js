@@ -15,6 +15,10 @@ import {
   useLazyGetPlayersListQuery,
   useLazyGetStaffsListQuery,
   useTeamResponsibilityMutation,
+  useUpdateCoachStatusMutation,
+  useUpdateFanStatusMutation,
+  useUpdatePlayerStatusMutation,
+  useUpdateStaffStatusMutation,
 } from "../redux/services/UsersListService";
 import {
   getCoachesListDispatch,
@@ -62,7 +66,14 @@ const UserListScreen = () => {
     teamResponsibilityReq,
     { isLoading: isTeamResponsibilityLoading, data: isTeamResponsibilityData },
   ] = useTeamResponsibilityMutation();
-
+  const [updateCoachStatus, { isSuccess: isUpdateCoachStatusSuccess }] =
+    useUpdateCoachStatusMutation();
+  const [updateStaffStatus, { isSuccess: isUpdateStaffStatusSuccess }] =
+    useUpdateStaffStatusMutation();
+  const [updatePlayerStatus, { isSuccess: isUpdatePlayerStatusSuccess }] =
+    useUpdatePlayerStatusMutation();
+  const [updateFanStatus, { isSuccess: isUpdateFanStatusSuccess }] =
+    useUpdateFanStatusMutation();
   const [page, setPage] = useState({
     currentPageForCoachList: 1,
     currentPageForStaffList: 1,
@@ -70,6 +81,7 @@ const UserListScreen = () => {
     currentPageForFanList: 1,
   });
   const [eventsType, setEventsType] = useState("coach");
+  const [toggleOnModal, setToggleOnModal] = useState(false);
 
   const coachesList = useSelector((state) => state.usersListState.coachesList);
   const staffsList = useSelector((state) => state.usersListState.staffsList);
@@ -78,7 +90,7 @@ const UserListScreen = () => {
   const teamResponsibility = useSelector(
     (state) => state.usersListState.teamResponsibility
   );
-  console.log("fghftrerawaewaopop", teamResponsibility);
+
   useEffect(() => {
     if (eventsType === "coach") {
       getCoachesList({ search: isSearch, type: eventsType });
@@ -96,31 +108,35 @@ const UserListScreen = () => {
     getStaffsList,
     getPlayersList,
     getFansList,
+    isUpdateCoachStatusSuccess,
+    isUpdateFanStatusSuccess,
+    isUpdatePlayerStatusSuccess,
+    isUpdateStaffStatusSuccess,
   ]);
 
   useEffect(() => {
     if (!isCoachLoading && coachData?.code === 0) {
       dispatch(getCoachesListDispatch(coachData?.data));
     }
-  }, [isCoachFetching]);
+  }, [isCoachFetching, isUpdateCoachStatusSuccess]);
 
   useEffect(() => {
     if (!isStaffLoading && staffData?.code === 0) {
       dispatch(getStaffsListDispatch(staffData?.data));
     }
-  }, [isStaffFetching]);
+  }, [isStaffFetching, isUpdateStaffStatusSuccess]);
 
   useEffect(() => {
     if (!isPlayerLoading && playerData?.code === 0) {
       dispatch(getPlayersListDispatch(playerData?.data));
     }
-  }, [isPlayerFetching]);
+  }, [isPlayerFetching, isUpdatePlayerStatusSuccess]);
 
   useEffect(() => {
     if (!isFanLoading && fanData?.code === 0) {
       dispatch(getFansListDispatch(fanData?.data));
     }
-  }, [isFanFetching]);
+  }, [isFanFetching, isUpdateFanStatusSuccess]);
 
   useEffect(() => {
     if (!isTeamResponsibilityLoading && isTeamResponsibilityData?.code === 0) {
@@ -155,16 +171,80 @@ const UserListScreen = () => {
   const indexOfLastPostForFanList = page.currentPageForFanList * itemsPerPage;
   const indexOfFirstPostForFanList = indexOfLastPostForFanList - itemsPerPage;
 
-  // const handleSwitchToggle = (item) => {
-  //   let addItems = [];
-  //   addItems.includes(item);
-
-  //   console.log("kjcbscbjkdsb", addItems)
-  // };
   const onClickView = async (item) => {
     await teamResponsibilityReq({ email: item.email });
   };
-
+  const renderModal = () => {
+    return (
+      <>
+        <RenderModal
+          show={toggleOnModal}
+          onHide={() => setToggleOnModal(false)}
+          closeBtnOnClick={() => setToggleOnModal(false)}
+          logoutModal={true}
+          modalbody={
+            <div className="d-flex">
+              <h6 className="fs-6">
+                Are you sure you want to{" "}
+                {activeItems.status ? "deactivate" : "activate"}
+              </h6>
+              <h6 className="fs-6 fw-bold ms-1">
+                {activeItems?.first_name} {activeItems?.last_name}?
+              </h6>
+            </div>
+          }
+          cancelOnClick={() => setToggleOnModal(false)}
+          okOnClick={async () => {
+            let updateStatusReq = {
+              userId: activeItems?._id,
+              status: toggleOn ? "ACTIVE" : "INACTIVE",
+            };
+            if (eventsType === "coach") {
+              await updateCoachStatus(updateStatusReq);
+            } else if (eventsType === "staff") {
+              await updateStaffStatus(updateStatusReq);
+            } else if (eventsType === "player") {
+              await updatePlayerStatus(updateStatusReq);
+            } else {
+              await updateFanStatus(updateStatusReq);
+            }
+            setToggleOnModal(false);
+            setActiveModal(false);
+          }}
+          CancelText={"Cancel"}
+          OkText={"Confirm"}
+        />
+      </>
+    );
+  };
+  const renderActivatedAndDeactivated = () => {
+    return (
+      <div className="d-flex align-items-center">
+        <div
+          className="ms-1"
+          style={{
+            height: 12,
+            width: 12,
+            backgroundColor: "#2bd144",
+          }}
+        />
+        <span className="ms-1" style={{ fontSize: FONT_SIZE.S }}>
+          Activated
+        </span>
+        <div
+          className="ms-2"
+          style={{
+            height: 12,
+            width: 12,
+            backgroundColor: "red",
+          }}
+        />
+        <span className="ms-1" style={{ fontSize: FONT_SIZE.S }}>
+          Deactivated
+        </span>
+      </div>
+    );
+  };
   return (
     <div>
       <div className="container-fluid p-0">
@@ -174,19 +254,13 @@ const UserListScreen = () => {
             <h5 className="m-3">Users</h5>
           </div>
           <div className="container-fluid border">
-            <div
-              className=" d-flex align-items-center border-bottom my-3"
-              style={{ justifyContent: "center" }}
-            >
-              <div className="d-sm-flex col-sm-12 align-items-center justify-center">
-                <div
-                  className="d-sm-flex col-sm-6 mt-sm-4 mb-3 flex-md-column flex-lg-row justify-content-lg-start"
-                  style={{ display: "grid", justifyContent: "center" }}
-                >
+            <div className=" d-flex align-items-center border-bottom">
+              <div className="d-lg-flex col-sm-12 align-items-center justify-content-between my-3">
+                <div className="d-flex align-items-center">
                   {EventsTab.map((item, index) => (
                     <button
                       key={item.id}
-                      className={`btn d-flex ${
+                      className={`btn d-flex pt-2 align-items-end ${
                         eventsType === item.type ? "active-button" : ""
                       }`}
                       style={{
@@ -206,12 +280,9 @@ const UserListScreen = () => {
                     </button>
                   ))}
                 </div>
-                <div
-                  className="d-sm-flex col-sm-6 px-sm-2 mb-2 justify-center flex-md-column flex-lg-row"
-                  style={{ justifyContent: "end" }}
-                >
+                <div className="d-sm-flex">
                   <SearchBar
-                    className={"search-container d-sm-flex"}
+                    className={"search-container ms-ms-0 ms-3"}
                     value={isSearch}
                     onChange={(text) => {
                       setIsSearch(text.target.value);
@@ -220,8 +291,8 @@ const UserListScreen = () => {
                   />
                   <button
                     type="button"
-                    className="btn d-flex btn-primary mt-lg-0 mt-2 ms-3"
-                    style={{ alignSelf: "center", flex: "none" }}
+                    className="btn btn-primary d-flex align-items-center ms-5 me-xl-5 me-0"
+                    style={{ fontSize: FONT_SIZE.S, minWidth: "fit-content" }}
                   >
                     <Icon
                       icon="ion:document-text-outline"
@@ -229,7 +300,7 @@ const UserListScreen = () => {
                       width="16"
                       height="16"
                     />
-                    <h6 className="mb-0 ms-2">Export Report</h6>
+                    Export Report
                   </button>
                 </div>
               </div>
@@ -265,13 +336,7 @@ const UserListScreen = () => {
                         ) : (
                           <>
                             {coachesList?.length === 0 ? (
-                              <h6
-                                style={{
-                                  justifyContent: "center",
-                                  display: "flex",
-                                  marginBottom: "10px",
-                                }}
-                              >
+                              <h6 className="my-3 d-flex justify-content-center">
                                 No coaches found
                               </h6>
                             ) : (
@@ -329,6 +394,7 @@ const UserListScreen = () => {
                                       >
                                         Action
                                       </th>
+                                      {renderModal()}
                                       {activeModal && (
                                         <Modal
                                           show={activeModal}
@@ -501,7 +567,19 @@ const UserListScreen = () => {
                                                                       uncheckedIcon={
                                                                         false
                                                                       }
-                                                                      onChange={() => {}}
+                                                                      onChange={() => {
+                                                                        setToggleOn(
+                                                                          item.status
+                                                                            ? false
+                                                                            : true
+                                                                        );
+                                                                        setActiveItems(
+                                                                          item
+                                                                        );
+                                                                        setToggleOnModal(
+                                                                          true
+                                                                        );
+                                                                      }}
                                                                     />
                                                                   </td>
                                                                 </tr>
@@ -624,46 +702,52 @@ const UserListScreen = () => {
                                     </tbody>
                                   </table>
                                 </div>
-                                {coachesList !== undefined &&
-                                  coachesList?.length > 10 && (
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "flex-end",
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      <Pagination
-                                        itemsPerPage={itemsPerPage}
-                                        totalItems={coachesList?.length}
-                                        paginate={paginate}
-                                        currentPage={
-                                          page?.currentPageForCoachList
-                                        }
-                                        type="Coach"
-                                        setPrevBtn={() =>
-                                          setPage({
-                                            ...page,
-                                            currentPageForCoachList:
-                                              page.currentPageForCoachList - 1,
-                                          })
-                                        }
-                                        setNextBtn={() =>
-                                          setPage({
-                                            ...page,
-                                            currentPageForCoachList:
-                                              page.currentPageForCoachList + 1,
-                                          })
-                                        }
-                                      />
-                                    </div>
-                                  )}
+                                <div className="d-sm-flex justify-content-between">
+                                  {renderActivatedAndDeactivated()}
+                                  {coachesList !== undefined &&
+                                    coachesList?.length > 10 && (
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "flex-end",
+                                          marginTop: "10px",
+                                        }}
+                                      >
+                                        <Pagination
+                                          itemsPerPage={itemsPerPage}
+                                          totalItems={coachesList?.length}
+                                          paginate={paginate}
+                                          currentPage={
+                                            page?.currentPageForCoachList
+                                          }
+                                          type="Coach"
+                                          setPrevBtn={() =>
+                                            setPage({
+                                              ...page,
+                                              currentPageForCoachList:
+                                                page.currentPageForCoachList -
+                                                1,
+                                            })
+                                          }
+                                          setNextBtn={() =>
+                                            setPage({
+                                              ...page,
+                                              currentPageForCoachList:
+                                                page.currentPageForCoachList +
+                                                1,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                    )}
+                                </div>
                               </div>
                             )}
                           </>
                         )}
                       </>
                     )}
+
                     {eventsType === "staff" && (
                       <>
                         {isStaffFetching ? (
@@ -680,13 +764,7 @@ const UserListScreen = () => {
                         ) : (
                           <>
                             {staffsList?.length === 0 ? (
-                              <h6
-                                style={{
-                                  justifyContent: "center",
-                                  display: "flex",
-                                  marginBottom: "10px",
-                                }}
-                              >
+                              <h6 className="my-3 d-flex justify-content-center">
                                 No staffs found
                               </h6>
                             ) : (
@@ -764,6 +842,7 @@ const UserListScreen = () => {
                                       >
                                         Action
                                       </th>
+                                      {renderModal()}
                                     </tr>
                                     <tbody>
                                       {staffsList
@@ -831,51 +910,140 @@ const UserListScreen = () => {
                                             >
                                               {item.team_name}
                                             </td>
+                                            <td
+                                              className={
+                                                item.status
+                                                  ? " table-row-active text-nowrap"
+                                                  : "table-row-deactive text-nowrap"
+                                              }
+                                            >
+                                              <div className="d-flex align-items-center">
+                                                <span className="ms-1">b</span>
+                                                <div
+                                                  className="ms-1"
+                                                  style={{
+                                                    height: 15,
+                                                    width: 15,
+                                                    backgroundColor: item
+                                                      .responsibility.b
+                                                      ? "#2bd144"
+                                                      : "red",
+                                                  }}
+                                                />
+                                                <span className="ms-1">pc</span>
+                                                <div
+                                                  className="ms-1"
+                                                  style={{
+                                                    height: 15,
+                                                    width: 15,
+                                                    backgroundColor: item
+                                                      .responsibility.pc
+                                                      ? "#2bd144"
+                                                      : "red",
+                                                  }}
+                                                />
+                                                <span className="ms-1">sc</span>
+                                                <div
+                                                  className="ms-1"
+                                                  style={{
+                                                    height: 15,
+                                                    width: 15,
+                                                    backgroundColor: item
+                                                      .responsibility.sc
+                                                      ? "#2bd144"
+                                                      : "red",
+                                                  }}
+                                                />
+                                                <span className="ms-1">vs</span>
+                                                <div
+                                                  className="ms-1"
+                                                  style={{
+                                                    height: 15,
+                                                    width: 15,
+                                                    backgroundColor: item
+                                                      .responsibility.vs
+                                                      ? "#2bd144"
+                                                      : "red",
+                                                  }}
+                                                />
+                                              </div>
+                                            </td>
+                                            <td
+                                              className={
+                                                item.status
+                                                  ? " table-row-active text-nowrap"
+                                                  : "table-row-deactive text-nowrap"
+                                              }
+                                            >
+                                              <Switch
+                                                key={item}
+                                                checked={item.status}
+                                                onColor="#2bd144"
+                                                offColor="#ff0707"
+                                                checkedIcon={false}
+                                                handleDiameter={21}
+                                                height={25}
+                                                uncheckedIcon={false}
+                                                onChange={() => {
+                                                  setToggleOn(
+                                                    item.status ? false : true
+                                                  );
+                                                  setActiveItems(item);
+                                                  setToggleOnModal(true);
+                                                }}
+                                              />
+                                            </td>
                                           </tr>
                                         ))}
                                     </tbody>
                                   </table>
                                 </div>
-                                {staffsList !== undefined &&
-                                  staffsList?.length > 10 && (
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "flex-end",
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      <Pagination
-                                        itemsPerPage={itemsPerPage}
-                                        totalItems={staffsList?.length}
-                                        paginate={paginate}
-                                        currentPage={
-                                          page?.currentPageForStaffList
-                                        }
-                                        type="Staff"
-                                        setPrevBtn={() =>
-                                          setPage({
-                                            ...page,
-                                            currentPageForStaffList:
-                                              page.currentPageForStaffList - 1,
-                                          })
-                                        }
-                                        setNextBtn={() =>
-                                          setPage({
-                                            ...page,
-                                            currentPageForStaffList:
-                                              page.currentPageForStaffList + 1,
-                                          })
-                                        }
-                                      />
-                                    </div>
-                                  )}
+                                <div className="d-sm-flex justify-content-between">
+                                  {renderActivatedAndDeactivated()}
+                                  {staffsList !== undefined &&
+                                    staffsList?.length > 10 && (
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "flex-end",
+                                          marginTop: "10px",
+                                        }}
+                                      >
+                                        <Pagination
+                                          itemsPerPage={itemsPerPage}
+                                          totalItems={staffsList?.length}
+                                          paginate={paginate}
+                                          currentPage={
+                                            page?.currentPageForStaffList
+                                          }
+                                          type="Staff"
+                                          setPrevBtn={() =>
+                                            setPage({
+                                              ...page,
+                                              currentPageForStaffList:
+                                                page.currentPageForStaffList -
+                                                1,
+                                            })
+                                          }
+                                          setNextBtn={() =>
+                                            setPage({
+                                              ...page,
+                                              currentPageForStaffList:
+                                                page.currentPageForStaffList +
+                                                1,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                    )}
+                                </div>
                               </div>
                             )}
                           </>
                         )}
                       </>
                     )}
+
                     {eventsType === "player" && (
                       <>
                         {isPlayerFetching ? (
@@ -892,13 +1060,7 @@ const UserListScreen = () => {
                         ) : (
                           <>
                             {playersList.length === 0 ? (
-                              <h6
-                                style={{
-                                  justifyContent: "center",
-                                  display: "flex",
-                                  marginBottom: "10px",
-                                }}
-                              >
+                              <h6 className="my-3 d-flex justify-content-center">
                                 No players found
                               </h6>
                             ) : (
@@ -996,20 +1158,7 @@ const UserListScreen = () => {
                                       >
                                         Action
                                       </th>
-                                      {/* <RenderModal
-                                        show={activeModal}
-                                        onHide={() => setActiveModal(false)}
-                                        closeBtnOnClick={() =>
-                                          setActiveModal(false)
-                                        }
-                                        logoutModal={true}
-                                        modalbody={`Are you sure you want to deactivate ${activeItems?.first_name} ${activeItems?.last_name}`}
-                                        cancelOnClick={() =>
-                                          setActiveModal(false)
-                                        }
-                                        CancelText={"Cancel"}
-                                        OkText={"Confirm"}
-                                      /> */}
+                                      {renderModal()}
                                     </tr>
                                     <tbody>
                                       {playersList
@@ -1120,7 +1269,13 @@ const UserListScreen = () => {
                                                 handleDiameter={21}
                                                 height={25}
                                                 uncheckedIcon={false}
-                                                onChange={() => {}}
+                                                onChange={() => {
+                                                  setToggleOn(
+                                                    item.status ? false : true
+                                                  );
+                                                  setActiveItems(item);
+                                                  setToggleOnModal(true);
+                                                }}
                                               />
                                             </td>
                                           </tr>
@@ -1128,46 +1283,52 @@ const UserListScreen = () => {
                                     </tbody>
                                   </table>
                                 </div>
-                                {playersList !== undefined &&
-                                  playersList?.length > 10 && (
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "flex-end",
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      <Pagination
-                                        itemsPerPage={itemsPerPage}
-                                        totalItems={playersList?.length}
-                                        paginate={paginate}
-                                        currentPage={
-                                          page?.currentPageForPlayerList
-                                        }
-                                        type="Player"
-                                        setPrevBtn={() =>
-                                          setPage({
-                                            ...page,
-                                            currentPageForPlayerList:
-                                              page.currentPageForPlayerList - 1,
-                                          })
-                                        }
-                                        setNextBtn={() =>
-                                          setPage({
-                                            ...page,
-                                            currentPageForPlayerList:
-                                              page.currentPageForPlayerList + 1,
-                                          })
-                                        }
-                                      />
-                                    </div>
-                                  )}
+                                <div className="d-sm-flex justify-content-between">
+                                  {renderActivatedAndDeactivated()}
+                                  {playersList !== undefined &&
+                                    playersList?.length > 10 && (
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "flex-end",
+                                          marginTop: "10px",
+                                        }}
+                                      >
+                                        <Pagination
+                                          itemsPerPage={itemsPerPage}
+                                          totalItems={playersList?.length}
+                                          paginate={paginate}
+                                          currentPage={
+                                            page?.currentPageForPlayerList
+                                          }
+                                          type="Player"
+                                          setPrevBtn={() =>
+                                            setPage({
+                                              ...page,
+                                              currentPageForPlayerList:
+                                                page.currentPageForPlayerList -
+                                                1,
+                                            })
+                                          }
+                                          setNextBtn={() =>
+                                            setPage({
+                                              ...page,
+                                              currentPageForPlayerList:
+                                                page.currentPageForPlayerList +
+                                                1,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                    )}
+                                </div>
                               </div>
                             )}
                           </>
                         )}
                       </>
                     )}
+
                     {eventsType === "fan" && (
                       <>
                         {isFanFetching ? (
@@ -1184,13 +1345,7 @@ const UserListScreen = () => {
                         ) : (
                           <>
                             {fansList.length === 0 ? (
-                              <h6
-                                style={{
-                                  justifyContent: "center",
-                                  display: "flex",
-                                  marginBottom: "10px",
-                                }}
-                              >
+                              <h6 className="my-3 d-flex justify-content-center">
                                 No fans found
                               </h6>
                             ) : (
@@ -1258,20 +1413,7 @@ const UserListScreen = () => {
                                       >
                                         Action
                                       </th>
-                                      <RenderModal
-                                        show={activeModal}
-                                        onHide={() => setActiveModal(false)}
-                                        closeBtnOnClick={() =>
-                                          setActiveModal(false)
-                                        }
-                                        logoutModal={true}
-                                        modalbody={`Are you sure you want to deactivate ${activeItems?.first_name} ${activeItems?.last_name}`}
-                                        cancelOnClick={() =>
-                                          setActiveModal(false)
-                                        }
-                                        CancelText={"Cancel"}
-                                        OkText={"Confirm"}
-                                      />
+                                      {renderModal()}
                                     </tr>
                                     <tbody className="">
                                       {fansList
@@ -1355,7 +1497,13 @@ const UserListScreen = () => {
                                                 handleDiameter={21}
                                                 height={25}
                                                 uncheckedIcon={false}
-                                                onChange={() => {}}
+                                                onChange={() => {
+                                                  setToggleOn(
+                                                    item.status ? false : true
+                                                  );
+                                                  setActiveItems(item);
+                                                  setToggleOnModal(true);
+                                                }}
                                               />
                                             </td>
                                           </tr>
@@ -1363,40 +1511,43 @@ const UserListScreen = () => {
                                     </tbody>
                                   </table>
                                 </div>
-                                {fansList !== undefined &&
-                                  fansList?.length > 10 && (
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "flex-end",
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      <Pagination
-                                        itemsPerPage={itemsPerPage}
-                                        totalItems={fansList?.length}
-                                        paginate={paginate}
-                                        currentPage={
-                                          page?.currentPageForFanList
-                                        }
-                                        type="Fan"
-                                        setPrevBtn={() =>
-                                          setPage({
-                                            ...page,
-                                            currentPageForFanList:
-                                              page.currentPageForFanList - 1,
-                                          })
-                                        }
-                                        setNextBtn={() =>
-                                          setPage({
-                                            ...page,
-                                            currentPageForFanList:
-                                              page.currentPageForFanList + 1,
-                                          })
-                                        }
-                                      />
-                                    </div>
-                                  )}
+                                <div className="d-sm-flex justify-content-between">
+                                  {renderActivatedAndDeactivated()}
+                                  {fansList !== undefined &&
+                                    fansList?.length > 10 && (
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "flex-end",
+                                          marginTop: "10px",
+                                        }}
+                                      >
+                                        <Pagination
+                                          itemsPerPage={itemsPerPage}
+                                          totalItems={fansList?.length}
+                                          paginate={paginate}
+                                          currentPage={
+                                            page?.currentPageForFanList
+                                          }
+                                          type="Fan"
+                                          setPrevBtn={() =>
+                                            setPage({
+                                              ...page,
+                                              currentPageForFanList:
+                                                page.currentPageForFanList - 1,
+                                            })
+                                          }
+                                          setNextBtn={() =>
+                                            setPage({
+                                              ...page,
+                                              currentPageForFanList:
+                                                page.currentPageForFanList + 1,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                    )}
+                                </div>
                               </div>
                             )}
                           </>

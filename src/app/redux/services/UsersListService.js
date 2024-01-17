@@ -6,6 +6,10 @@ import {
   GET_PLAYER_LIST,
   GET_STAFF_LIST,
   TEAM_RESPONSIBILITY_LIST,
+  UPDATE_COACH_STATUS,
+  UPDATE_FAN_STATUS,
+  UPDATE_PLAYER_STATUS,
+  UPDATE_STAFF_STATUS,
 } from "../../utils/URL";
 
 export const usersListService = createApi({
@@ -47,6 +51,34 @@ export const usersListService = createApi({
         body: req,
       }),
     }),
+    updateCoachStatus: builder.mutation({
+      query: (req) => ({
+        url: UPDATE_COACH_STATUS,
+        method: "POST",
+        body: req,
+      }),
+    }),
+    updateStaffStatus: builder.mutation({
+      query: (req) => ({
+        url: UPDATE_STAFF_STATUS,
+        method: "POST",
+        body: req,
+      }),
+    }),
+    updatePlayerStatus: builder.mutation({
+      query: (req) => ({
+        url: UPDATE_PLAYER_STATUS,
+        method: "POST",
+        body: req,
+      }),
+    }),
+    updateFanStatus: builder.mutation({
+      query: (req) => ({
+        url: UPDATE_FAN_STATUS,
+        method: "POST",
+        body: req,
+      }),
+    }),
   }),
 });
 export const {
@@ -55,4 +87,8 @@ export const {
   useLazyGetPlayersListQuery,
   useLazyGetFansListQuery,
   useTeamResponsibilityMutation,
+  useUpdateCoachStatusMutation,
+  useUpdateFanStatusMutation,
+  useUpdateStaffStatusMutation,
+  useUpdatePlayerStatusMutation,
 } = usersListService;

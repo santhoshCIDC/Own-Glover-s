@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useLazyGetSettingsQuery } from "../redux/services/SettingsService";
+import {
+  useEventsSettingsMutation,
+  useLazyGetSettingsQuery,
+} from "../redux/services/SettingsService";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../components/Header";
 import { getSettingsDispatch } from "../redux/slices/SettingsSlice";
 import CircleLoading from "../components/CircleLoading";
+import Utility, { ToastMessage } from "../utils/Utility";
 
 const SettingScreen = () => {
   const dispatch = useDispatch();
   const [getSettings, { data, isLoading }] = useLazyGetSettingsQuery();
+  const [submit, setSubmit] = useState("");
+  const [eventsSettings, { data: eventsSettingsData }] =
+    useEventsSettingsMutation();
   //global State
   const settingsDetails = useSelector(
     (state) => state.settingsDetailsState.settingsDetails
@@ -23,13 +30,36 @@ const SettingScreen = () => {
 
   useEffect(() => {
     getSettings({});
-  }, [getSettings]);
+    if (eventsSettingsData?.code === 0) {
+      Utility.toastMessage("Updated");
+    }
+  }, [getSettings, eventsSettingsData]);
 
   useEffect(() => {
     if (!isLoading && data?.code === 0) {
       dispatch(getSettingsDispatch(data?.data));
     }
   }, [data?.code, isLoading]);
+
+  const onClickPlayerSubmitButton = async () => {
+    setSubmit("Submit1");
+    let eventsSettingsReq = {
+      type: "home_team",
+      value: noofPlayers,
+    };
+    await eventsSettings(eventsSettingsReq);
+    setSubmit("");
+  };
+
+  const onClickStaffSubmitButton = async () => {
+    setSubmit("Submit2");
+    let eventsSettingsReq = {
+      type: "staff_home_team",
+      value: noofStaffs,
+    };
+    await eventsSettings(eventsSettingsReq);
+    setSubmit("");
+  };
 
   //initial render
   return (
@@ -101,8 +131,13 @@ const SettingScreen = () => {
                     />
                   </td>
                   <td className="settings_th">
-                    <button className="btn btn-success px-3 py-1">
-                      <h6 className="mb-0 fw-bold">Submit</h6>
+                    <button
+                      className="btn btn-success px-3 py-1"
+                      onClick={() => onClickPlayerSubmitButton()}
+                    >
+                      <h6 className="mb-0 fw-bold">
+                        {submit === "Submit1" ? "Please wait" : "Submit"}
+                      </h6>
                     </button>
                   </td>
                   <td className="px-3">
@@ -131,8 +166,13 @@ const SettingScreen = () => {
                     />
                   </td>
                   <td className="settings_th">
-                    <button className="btn btn-success px-3 py-1">
-                      <h6 className="mb-0 fw-bold">Submit</h6>
+                    <button
+                      className="btn btn-success px-3 py-1"
+                      onClick={() => onClickStaffSubmitButton()}
+                    >
+                      <h6 className="mb-0 fw-bold">
+                        {submit === "Submit2" ? "Please wait" : "Submit"}
+                      </h6>
                     </button>
                   </td>
                   <td className="px-3">
@@ -150,6 +190,7 @@ const SettingScreen = () => {
           </div>
         )}
       </div>
+      {ToastMessage()}
     </div>
   );
 };

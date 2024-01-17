@@ -7,7 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getEventsListDispatch } from "../../redux/slices/TeamsListSlice";
 import CircleLoading from "../../components/CircleLoading";
 import { FONT_SIZE } from "../../utils/constants";
-
+import { Dropdown, IconButton, Popover, Whisper } from "rsuite";
+import FileDownloadIcon from "@rsuite/icons/FileDownload";
+import PageIcon from "@rsuite/icons/Page";
+import { CSVLink } from "react-csv";
 const EventsList = () => {
   const EventsTab = [
     { id: 1, title: "Live Events", type: "live" },
@@ -32,6 +35,23 @@ const EventsList = () => {
     }
   }, [data?.code, isLoading, isFetching]);
 
+  const renderMenu = ({ left, top, className }, ref) => {
+    return (
+      <Popover ref={ref} className={className} style={{ left, top }} full>
+        <Dropdown.Menu title="Create new file">
+          <Dropdown.Item icon={<PageIcon />} eventKey={1}>
+            <CSVLink data={[]} target="_blank" filename={"Transactions"}>
+              <button>CSV format ⬇</button>
+            </CSVLink>
+          </Dropdown.Item>
+          <Dropdown.Item icon={<FileDownloadIcon />} eventKey={2}>
+            <button onClick={() => {}}>PDF format ⬇</button>
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Popover>
+    );
+  };
+
   return (
     <div>
       <div className="container-fluid p-0">
@@ -41,7 +61,58 @@ const EventsList = () => {
             <h5 className="m-3">Events</h5>
           </div>
           <div className="container-fluid border">
-            <div
+            <div className=" d-flex align-items-center border-bottom">
+              <div className="d-xl-flex col-sm-12 align-items-center justify-content-between my-3">
+                <div className="d-sm-flex align-items-center">
+                  {EventsTab.map((item, index) => (
+                    <button
+                      key={item.id}
+                      className={`btn d-flex pt-2 align-items-end ${
+                        eventsType === item.type ? "active-button" : ""
+                      }`}
+                      style={{
+                        border: "none",
+                        cursor:
+                          eventsType === item.type ? "default" : "pointer",
+                      }}
+                      onClick={() => setEventsType(item.type)}
+                    >
+                      <h6
+                        className={`fw-bold text-nowrap ${
+                          eventsType === item.type ? "active-text-color" : ""
+                        }`}
+                      >
+                        {item.title}
+                      </h6>
+                    </button>
+                  ))}
+                </div>
+                <div className="d-sm-flex">
+                  <SearchBar
+                    className={"search-container ms-ms-0 ms-3"}
+                    value={isSearch}
+                    onChange={(text) => {
+                      setIsSearch(text.target.value);
+                    }}
+                    CloseBtnOnClick={() => setIsSearch("")}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-primary d-flex align-items-center ms-5 me-xl-5 me-0"
+                    style={{ fontSize: FONT_SIZE.S, minWidth: "fit-content" }}
+                  >
+                    <Icon
+                      icon="ion:document-text-outline"
+                      color="white"
+                      width="16"
+                      height="16"
+                    />
+                    Export Report
+                  </button>
+                </div>
+              </div>
+            </div>
+            {/* <div
               className=" d-flex align-items-center border-bottom my-3"
               style={{ justifyContent: "center" }}
             >
@@ -116,6 +187,7 @@ const EventsList = () => {
                             style={{
                               color: "#0056b3",
                               backgroundColor: "#80808020",
+                              cursor: "pointer",
                             }}
                           >
                             <h6 className="mb-0">CSV format</h6>
@@ -142,6 +214,7 @@ const EventsList = () => {
                             style={{
                               color: "#575757",
                               backgroundColor: "#80808020",
+                              cursor: "pointer",
                             }}
                           >
                             <h6 className="mb-0">PDF format</h6>
@@ -158,7 +231,7 @@ const EventsList = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
             {isLoading ? (
               <div
                 className="d-flex justify-content-center align-items-center"
@@ -190,13 +263,7 @@ const EventsList = () => {
                         ) : (
                           <>
                             {eventsList?.live?.length === 0 ? (
-                              <h6
-                                style={{
-                                  justifyContent: "center",
-                                  display: "flex",
-                                  marginBottom: "10px",
-                                }}
-                              >
+                              <h6 className="my-3 d-flex justify-content-center">
                                 No live events found
                               </h6>
                             ) : (
@@ -325,14 +392,10 @@ const EventsList = () => {
                                           <td>{item.playing_team}</td>
                                           <td>{item.opponent_team}</td>
                                           <td>{item.location}</td>
-                                          <td
-                                            className="ps-2 text_red_color"
-                                          >
+                                          <td className="ps-2 text_red_color">
                                             {item.progress}
                                           </td>
-                                          <td
-                                            className="text_red_color"
-                                          >
+                                          <td className="text_red_color">
                                             {item.game_status}
                                           </td>
                                           <td>
@@ -376,13 +439,7 @@ const EventsList = () => {
                         ) : (
                           <>
                             {eventsList?.recent?.length === 0 ? (
-                              <h6
-                                style={{
-                                  justifyContent: "center",
-                                  display: "flex",
-                                  marginBottom: "10px",
-                                }}
-                              >
+                              <h6 className="my-3 d-flex justify-content-center">
                                 No recent events found
                               </h6>
                             ) : (
@@ -570,13 +627,7 @@ const EventsList = () => {
                         ) : (
                           <>
                             {eventsList?.upcoming?.length === 0 ? (
-                              <h6
-                                style={{
-                                  justifyContent: "center",
-                                  display: "flex",
-                                  marginBottom: "10px",
-                                }}
-                              >
+                              <h6 className="my-3 d-flex justify-content-center">
                                 No upcoming events found
                               </h6>
                             ) : (
@@ -707,20 +758,14 @@ const EventsList = () => {
                                             <td>{item.opponent_team}</td>
                                             <td>{item.location}</td>
                                             <td
-                                              className={`ps-2 ${
-                                                item.progress === "Completed"
-                                                  ? "text_primary"
-                                                  : "text_secondary"
-                                              }`}
+                                              className="ps-2 fw-bold"
+                                              style={{ color: "green" }}
                                             >
                                               {item.progress}
                                             </td>
                                             <td
-                                              className={`${
-                                                item.game_status === "END"
-                                                  ? "text_primary"
-                                                  : "text_secondary"
-                                              }`}
+                                              className="ps-2 fw-bold"
+                                              style={{ color: "green" }}
                                             >
                                               {item.game_status}
                                             </td>

@@ -64,34 +64,24 @@ const TeamsList = () => {
             <h5 className="m-3">Events</h5>
           </div>
           <div className="container-fluid border">
-            <div
-              className=" d-flex align-items-center border-bottom my-3"
-              style={{ justifyContent: "center" }}
-            >
-              <div className="d-sm-flex col-sm-12 align-items-center justify-center">
-                <div
-                  className="d-sm-flex col-sm-6 mt-sm-4 mb-3 flex-md-column flex-lg-row justify-content-lg-start"
-                  style={{ display: "grid", justifyContent: "center" }}
-                >
+            <div className=" d-flex align-items-center border-bottom">
+              <div className="d-lg-flex col-sm-12 align-items-center justify-content-between my-3">
+                <div className="d-flex align-items-center">
                   <button
-                    className="btn w-10"
+                    className="btn d-flex pt-2 align-items-end active-button"
                     style={{
-                      marginRight: "1vw",
                       border: "none",
-                      cursor: "default",
+                      cursor: "pointer",
                     }}
                   >
-                    <h6 className=" fw-bold active-text-color text-nowrap">
-                      Teams List
+                    <h6 className="fw-bold text-nowrap active-text-color">
+                      {"Team List"}
                     </h6>
                   </button>
                 </div>
-                <div
-                  className="d-sm-flex col-sm-6 px-sm-2 mb-2 justify-center flex-md-column flex-lg-row"
-                  style={{ justifyContent: "end" }}
-                >
+                <div className="d-sm-flex">
                   <SearchBar
-                    className={"search-container d-sm-flex"}
+                    className={"search-container ms-ms-0 ms-3"}
                     value={isSearch}
                     onChange={(text) => {
                       setIsSearch(text.target.value);
@@ -100,9 +90,8 @@ const TeamsList = () => {
                   />
                   <button
                     type="button"
-                    className="btn d-flex btn-primary mt-lg-0 mt-2 ms-3"
-                    style={{ alignSelf: "center", flex: "none" }}
-                    onClick={onButtonClick}
+                    className="btn btn-primary d-flex align-items-center ms-5 me-xl-5 me-0"
+                    style={{ fontSize: FONT_SIZE.S, minWidth: "fit-content" }}
                   >
                     <Icon
                       icon="ion:document-text-outline"
@@ -110,12 +99,11 @@ const TeamsList = () => {
                       width="16"
                       height="16"
                     />
-                    <h6 className="mb-0 ms-2">Export Report</h6>
+                    Export Report
                   </button>
                 </div>
               </div>
             </div>
-
             {isLoading ? (
               <div
                 className="d-flex justify-content-center align-items-center"
@@ -128,13 +116,7 @@ const TeamsList = () => {
                 {teamsList !== undefined && teamsList !== null && (
                   <>
                     {teamsList?.length === 0 ? (
-                      <h6
-                        style={{
-                          justifyContent: "center",
-                          display: "flex",
-                          marginBottom: "10px",
-                        }}
-                      >
+                      <h6 className="my-3 d-flex justify-content-center">
                         No teams found
                       </h6>
                     ) : (
@@ -151,138 +133,144 @@ const TeamsList = () => {
                             <CircleLoading />
                           </div>
                         ) : (
-                          <div className="row mt-3">
-                            <div class="table-responsive">
-                              <table className={"table"}>
-                                <tr>
-                                  <th
-                                    className={
-                                      "bg-light border-top border-bottom py-2 ps-2"
-                                    }
-                                    style={{
-                                      fontSize: FONT_SIZE.S,
-                                    }}
-                                  >
-                                    S No.
-                                  </th>
-                                  <th
-                                    className={
-                                      "bg-light border-top border-bottom py-2 ps-2"
-                                    }
-                                    style={{
-                                      fontSize: FONT_SIZE.S,
-                                    }}
-                                  >
-                                    Team Name
-                                  </th>
-                                  <th
-                                    className={
-                                      "bg-light border-top border-bottom py-2 ps-2"
-                                    }
-                                    style={{
-                                      fontSize: FONT_SIZE.S,
-                                    }}
-                                  >
-                                    Team Type
-                                  </th>
-                                  <th
-                                    className={
-                                      "bg-light border-top border-bottom py-2 ps-2"
-                                    }
-                                    style={{
-                                      fontSize: FONT_SIZE.S,
-                                    }}
-                                  >
-                                    Age Group
-                                  </th>
-                                  <th
-                                    className={
-                                      "bg-light border-top border-bottom py-2 ps-2"
-                                    }
-                                    style={{
-                                      fontSize: FONT_SIZE.S,
-                                    }}
-                                  >
-                                    Season
-                                  </th>
-                                  <th
-                                    className={
-                                      "bg-light border-top border-bottom py-2 ps-2"
-                                    }
-                                    style={{
-                                      fontSize: FONT_SIZE.S,
-                                    }}
-                                  >
-                                    Location
-                                  </th>
-                                </tr>
-                                <tbody>
-                                  {teamsList
-                                    .slice(
-                                      indexOfFirstPostForTeamList,
-                                      indexOfLastPostForTeamList
-                                    )
-                                    ?.map((item, index) => (
-                                      <tr
-                                        key={index}
-                                        style={{
-                                          fontSize: FONT_SIZE.S,
-                                        }}
-                                      >
-                                        <td>
-                                          {(
-                                            (page?.currentPageForTeamList - 1) *
-                                              10 +
-                                            index +
-                                            1
-                                          )
-                                            .toString()
-                                            .padStart(2, "0")}
-                                        </td>
-                                        <td>{item.team_name}</td>
-                                        <td>{item.team_type}</td>
-                                        <td>{item.age_value}</td>
-                                        <td>{item.season_name}</td>
-                                        <td>{item.address}</td>
-                                      </tr>
-                                    ))}
-                                </tbody>
-                              </table>
+                          <>
+                            <div className="row mt-3">
+                              <div class="table-responsive">
+                                <table className={"table"}>
+                                  <tr>
+                                    <th
+                                      className={
+                                        "bg-light border-top border-bottom py-2 ps-2"
+                                      }
+                                      style={{
+                                        fontSize: FONT_SIZE.S,
+                                      }}
+                                    >
+                                      S No.
+                                    </th>
+                                    <th
+                                      className={
+                                        "bg-light border-top border-bottom py-2 ps-2"
+                                      }
+                                      style={{
+                                        fontSize: FONT_SIZE.S,
+                                      }}
+                                    >
+                                      Team Name
+                                    </th>
+                                    <th
+                                      className={
+                                        "bg-light border-top border-bottom py-2 ps-2"
+                                      }
+                                      style={{
+                                        fontSize: FONT_SIZE.S,
+                                      }}
+                                    >
+                                      Team Type
+                                    </th>
+                                    <th
+                                      className={
+                                        "bg-light border-top border-bottom py-2 ps-2"
+                                      }
+                                      style={{
+                                        fontSize: FONT_SIZE.S,
+                                      }}
+                                    >
+                                      Age Group
+                                    </th>
+                                    <th
+                                      className={
+                                        "bg-light border-top border-bottom py-2 ps-2"
+                                      }
+                                      style={{
+                                        fontSize: FONT_SIZE.S,
+                                      }}
+                                    >
+                                      Season
+                                    </th>
+                                    <th
+                                      className={
+                                        "bg-light border-top border-bottom py-2 ps-2"
+                                      }
+                                      style={{
+                                        fontSize: FONT_SIZE.S,
+                                      }}
+                                    >
+                                      Location
+                                    </th>
+                                  </tr>
+                                  <tbody>
+                                    {teamsList
+                                      .slice(
+                                        indexOfFirstPostForTeamList,
+                                        indexOfLastPostForTeamList
+                                      )
+                                      ?.map((item, index) => (
+                                        <tr
+                                          key={index}
+                                          style={{
+                                            fontSize: FONT_SIZE.S,
+                                          }}
+                                        >
+                                          <td>
+                                            {(
+                                              (page?.currentPageForTeamList -
+                                                1) *
+                                                10 +
+                                              index +
+                                              1
+                                            )
+                                              .toString()
+                                              .padStart(2, "0")}
+                                          </td>
+                                          <td>{item.team_name}</td>
+                                          <td>{item.team_type}</td>
+                                          <td>{item.age_value}</td>
+                                          <td>{item.season_name}</td>
+                                          <td>{item.address}</td>
+                                        </tr>
+                                      ))}
+                                  </tbody>
+                                </table>
+                              </div>
                             </div>
-                          </div>
+                            <>
+                              {teamsList !== undefined &&
+                                teamsList?.length > 10 && (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "flex-end",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Pagination
+                                      itemsPerPage={itemsPerPage}
+                                      totalItems={teamsList?.length}
+                                      paginate={paginate}
+                                      currentPage={page?.currentPageForTeamList}
+                                      type="Team"
+                                      setPrevBtn={() =>
+                                        setPage({
+                                          ...page,
+                                          currentPageForTeamList:
+                                            page.currentPageForTeamList - 1,
+                                        })
+                                      }
+                                      setNextBtn={() =>
+                                        setPage({
+                                          ...page,
+                                          currentPageForTeamList:
+                                            page.currentPageForTeamList + 1,
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                )}
+                            </>
+                          </>
                         )}
                       </>
-                    )}
-                    {teamsList !== undefined && teamsList?.length > 10 && (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-end",
-                          marginTop: "10px",
-                        }}
-                      >
-                        <Pagination
-                          itemsPerPage={itemsPerPage}
-                          totalItems={teamsList?.length}
-                          paginate={paginate}
-                          currentPage={page?.currentPageForTeamList}
-                          type="Team"
-                          setPrevBtn={() =>
-                            setPage({
-                              ...page,
-                              currentPageForTeamList:
-                                page.currentPageForTeamList - 1,
-                            })
-                          }
-                          setNextBtn={() =>
-                            setPage({
-                              ...page,
-                              currentPageForTeamList:
-                                page.currentPageForTeamList + 1,
-                            })
-                          }
-                        />
-                      </div>
                     )}
                   </>
                 )}
