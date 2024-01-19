@@ -1,11 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  dashboardEventsTab: !localStorage.getItem("dashboardEventsTab")
+  dashboardEventsTab: localStorage.getItem("dashboardEventsTab")
     ? JSON.parse(localStorage.getItem("dashboardEventsTab"))
     : null,
   dashboardUserMatrics: !localStorage.getItem("dashboardUserMatrics")
     ? JSON.parse(localStorage.getItem("dashboardUserMatrics"))
+    : null,
+  dashboardUserMatricsWithParams: !localStorage.getItem("dashboardUserMatricsWithParams")
+    ? JSON.parse(localStorage.getItem("dashboardUserMatricsWithParams"))
     : null,
   dashboardEventMatrics: !localStorage.getItem("dashboardEventMatrics")
     ? localStorage.getItem("dashboardEventMatrics")
@@ -33,6 +36,13 @@ export const dashboardSlice = createSlice({
       );
       state.dashboardUserMatrics = action.payload;
     },
+    getDashboardUserMatricsWithParamsDispatch: (state, action) => {
+      localStorage.setItem(
+        "dashboardUserMatricsWithParams",
+        JSON.stringify(action.payload)
+      );
+      state.dashboardUserMatricsWithParams = action.payload;
+    },
     getDashboardEventMatricsDispatch: (state, action) => {
       localStorage.setItem(
         "dashboardEventMatrics",
@@ -57,4 +67,5 @@ export const {
   getDashboardUserMatricsDispatch,
   getDashboardEventMatricsDispatch,
   getDashboardTeamMatricsDispatch,
+  getDashboardUserMatricsWithParamsDispatch,
 } = dashboardSlice.actions;

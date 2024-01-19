@@ -12,7 +12,7 @@ const SplashScreen = () => {
     (state) => state.userState?.tokenDetails?.access_token
   );
 
-  const token = localStorage.getItem("userToken");
+  const token = localStorage.getItem("tokenDetails");
   const [refreshToken, { isLoading, data }] = useRefreshTokenMutation();
 
   useEffect(() => {

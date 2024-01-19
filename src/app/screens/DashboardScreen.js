@@ -8,6 +8,7 @@ import {
   useLazyGetEventsTabQuery,
   useLazyGetTeamMatricsQuery,
   useLazyGetUserMatricsQuery,
+  useLazyGetUserMatricsWithParamsQuery,
 } from "../redux/services/DashboardService";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,62 +16,61 @@ import {
   getDashboardEventsTabDispatch,
   getDashboardTeamMatricsDispatch,
   getDashboardUserMatricsDispatch,
+  getDashboardUserMatricsWithParamsDispatch,
 } from "../redux/slices/DashboardSlice";
 import CircleLoading from "../components/CircleLoading";
 
 const DashboardScreen = () => {
-  const emptyChartData = {
-    series: [
-      {
-        data: [],
-      },
-    ],
-    options: {},
-    dataLabels: {},
-    legend: {},
-  };
   const EventsTab = [
     { id: 1, title: "All", type: "all" },
     { id: 2, title: "Invited", type: "invited" },
     { id: 3, title: "Signed Up", type: "signedup" },
   ];
+  const initialStateOfEventLegnth = {
+    liveEventLength: 0,
+    recentEventsLength: 0,
+    upcomingEventsLength: 0,
+    todayEventCount: 0,
+    tomorrowEventCount: 0,
+  };
+  const initialStateOfPeoplesCount = {
+    staffCount: 0,
+    coachCount: 0,
+    playersCount: 0,
+    fanCount: 0,
+    inivitedStaffCount: 0,
+    inivitedCoachCount: 0,
+    inivitedPlayersCount: 0,
+    inivitedFanCount: 0,
+  };
+
+  //Local state
   const eventsTabColors = ["#1E9F4D", "#E2922F", "#E573A4"];
   const userMatricsColors = ["#f87979", "#8843EC", "#B250FF", "#38A6DA"];
   const dispatch = useDispatch();
   const [isSearch, setIsSearch] = useState("");
-  const [eventsTabChartData, setEventsTabChartData] = useState(emptyChartData);
-  const [userGraphChartData, setUserGraphChartData] = useState(emptyChartData);
   const [eventsTotalCount, setEventsTotalCount] = useState(0);
+  const [eventLength, setEventLength] = useState(initialStateOfEventLegnth);
+  const [peoplesCount, setPeoplesCount] = useState(initialStateOfPeoplesCount);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [scheduledCount, setScheduledCount] = useState(0);
   const [eventsType, setEventsType] = useState("all");
-  const eventsTabList = useSelector(
-    (state) => state.dashboardEventsTabState.dashboardEventsTab
-  );
-  const userMatrics = useSelector(
-    (state) => state.dashboardUserMatricsState.dashboardUserMatrics
-  );
-  const eventMatrics = useSelector(
-    (state) => state.dashboardEventMatricsState.dashboardEventMatrics
-  );
-  const teamMatrics = useSelector(
-    (state) => state.dashboardTeamMatricsState.dashboardTeamMatrics
-  );
 
-  let liveEventLength = eventsTabList?.live?.length;
-  let recentEventsLength = eventsTabList?.recent?.length;
-  let upcomingEventsLength = eventsTabList?.upcoming?.length;
-  let staffCount = userMatrics ? userMatrics[0]?.count : null;
-  let coachCount = userMatrics ? userMatrics[1]?.count : null;
-  let playersCount = userMatrics ? userMatrics[3]?.count : null;
-  let fanCount = userMatrics ? userMatrics[2]?.count : null;
-  let todayEventCount = eventMatrics ? eventMatrics[0]?.count : null;
-  let tomorrowEventCount = eventMatrics ? eventMatrics[1]?.count : null;
-
+  useEffect(() => {}, []);
+  //API call
   const [getDashboardEventsTab, { data, isLoading }] =
     useLazyGetEventsTabQuery();
   const [
     getDashboardUserMatrics,
     { data: isUserMatricsData, isLoading: isUserMatricsLoading },
   ] = useLazyGetUserMatricsQuery();
+  const [
+    getDashboardUserMatricsWithParams,
+    {
+      data: isUserMatricsDataWithParams,
+      isFetching: isUserMatricsFetchingWithParams,
+    },
+  ] = useLazyGetUserMatricsWithParamsQuery();
   const [
     getDashboardEventMatrics,
     { data: isEventMatricsData, isLoading: isEventMatricsLoading },
@@ -79,6 +79,24 @@ const DashboardScreen = () => {
     getDashboardTeamMatrics,
     { data: isTeamMatricsData, isLoading: isTeamMatricsLoading },
   ] = useLazyGetTeamMatricsQuery();
+
+  //Global State
+  const eventsTabList = useSelector(
+    (state) => state.dashboardEventsTabState.dashboardEventsTab
+  );
+  const userMatrics = useSelector(
+    (state) => state.dashboardUserMatricsState.dashboardUserMatrics
+  );
+  const userMatricsWithParams = useSelector(
+    (state) =>
+      state.dashboardUserMatricsWithParamsState.dashboardUserMatricsWithParams
+  );
+  const eventMatrics = useSelector(
+    (state) => state.dashboardEventMatricsState.dashboardEventMatrics
+  );
+  const teamMatrics = useSelector(
+    (state) => state.dashboardTeamMatricsState.dashboardTeamMatrics
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -103,113 +121,100 @@ const DashboardScreen = () => {
     if (!isTeamMatricsLoading && isTeamMatricsData?.code === 0) {
       dispatch(getDashboardTeamMatricsDispatch(isTeamMatricsData?.data));
     }
+    if (
+      !isUserMatricsFetchingWithParams &&
+      isUserMatricsDataWithParams?.code === 0
+    ) {
+      dispatch(
+        getDashboardUserMatricsWithParamsDispatch(
+          isUserMatricsDataWithParams?.data
+        )
+      );
+    }
+    setEventLength({
+      ...eventLength,
+      liveEventLength: eventsTabList?.live?.length,
+      recentEventsLength: eventsTabList?.recent?.length,
+      upcomingEventsLength: eventsTabList?.upcoming?.length,
+      todayEventCount: eventMatrics ? eventMatrics[0]?.count : "0",
+      tomorrowEventCount: eventMatrics ? eventMatrics[1]?.count : "0",
+    });
+
+    setPeoplesCount({
+      ...peoplesCount,
+      staffCount: userMatrics ? userMatrics[0]?.count : "0",
+      coachCount: userMatrics ? userMatrics[1]?.count : "0",
+      playersCount: userMatrics ? userMatrics[3]?.count : "0",
+      fanCount: userMatrics ? userMatrics[2]?.count : "0",
+      inivitedStaffCount: userMatricsWithParams
+        ? userMatricsWithParams[0]?.count
+        : "0",
+      inivitedCoachCount: userMatricsWithParams
+        ? userMatricsWithParams[1]?.count
+        : "0",
+      inivitedPlayersCount: userMatricsWithParams
+        ? userMatricsWithParams[3]?.count
+        : "0",
+      inivitedFanCount: userMatricsWithParams
+        ? userMatricsWithParams[2]?.count
+        : "0",
+    });
   }, [
-    isUserMatricsData?.code,
+    isEventMatricsLoading,
+    isLoading,
+    isTeamMatricsLoading,
+    isUserMatricsLoading,
+    isUserMatricsFetchingWithParams,
     data?.code,
+    data?.data,
+    isUserMatricsData?.code,
+    isUserMatricsData?.data,
     isEventMatricsData?.code,
+    isEventMatricsData?.data,
     isTeamMatricsData?.code,
+    isTeamMatricsData?.data,
+    isUserMatricsDataWithParams?.code,
+    isUserMatricsDataWithParams?.data,
+    eventLength,
+    eventsTabList?.live?.length,
+    eventsTabList?.recent?.length,
+    eventsTabList?.upcoming?.length,
+    eventMatrics,
+    peoplesCount,
+    userMatrics,
+    userMatricsWithParams,
+    dispatch,
   ]);
 
   useEffect(() => {
-    if (!isLoading && data?.code === 0) {
-      setEventsTotalCount(
-        liveEventLength + recentEventsLength + upcomingEventsLength
-      );
-      setEventsTabChartData({
-        series: [
-          {
-            data: [liveEventLength, recentEventsLength, upcomingEventsLength],
-          },
-        ],
-        options: {
-          chart: {
-            height: 350,
-            type: "bar",
-            events: {
-              click: function (chart, w, e) {
-                // console.log(chart, w, e)
-              },
-            },
-          },
-          colors: eventsTabColors,
-          plotOptions: {
-            bar: {
-              columnWidth: "45%",
-              distributed: true,
-            },
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          legend: {
-            show: false,
-          },
-          xaxis: {
-            categories: [
-              `Live ${liveEventLength}`,
-              `Recent ${recentEventsLength}`,
-              `Upcoming ${upcomingEventsLength}`,
-            ],
-            labels: {
-              style: {
-                colors: eventsTabColors,
-                fontSize: "12px",
-              },
-            },
-          },
-        },
-      });
-      setUserGraphChartData({
-        series: [
-          {
-            data: [staffCount, coachCount, playersCount, fanCount],
-          },
-        ],
-        options: {
-          chart: {
-            height: 350,
-            type: "bar",
-            events: {
-              click: function (chart, w, e) {
-                // console.log(chart, w, e)
-              },
-            },
-          },
-          colors: userMatricsColors,
-          plotOptions: {
-            bar: {
-              columnWidth: "45%",
-              distributed: true,
-            },
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          legend: {
-            show: false,
-          },
-          xaxis: {
-            categories: [
-              `Staff ${staffCount}`,
-              `Coach ${coachCount}`,
-              `Player ${playersCount}`,
-              `Fan ${fanCount}`,
-            ],
-            labels: {
-              style: {
-                colors: userMatricsColors,
-                fontSize: "12px",
-              },
-            },
-          },
-        },
-      });
+    if (eventsType === "invited") {
+      getDashboardUserMatricsWithParams({ type: "PENDING" });
+    } else if (eventsType === "signedup") {
+      getDashboardUserMatricsWithParams({ type: "ACCEPTED" });
     }
+  }, [eventsType]);
+
+  useEffect(() => {
+    setEventsTotalCount(
+      eventLength?.liveEventLength +
+        eventLength?.recentEventsLength +
+        eventLength?.upcomingEventsLength
+    );
+    setCompletedCount(
+      ((eventLength?.recentEventsLength * 100) / eventsTotalCount).toFixed(0)
+    );
+    setScheduledCount(
+      ((eventLength?.liveEventLength + eventLength?.upcomingEventsLength) *
+        100) /
+        eventsTotalCount.toFixed(0)
+    );
   }, [
+    eventLength?.liveEventLength,
+    eventLength?.recentEventsLength,
+    eventLength?.upcomingEventsLength,
+    eventsTotalCount,
     getDashboardEventsTab,
-    getDashboardUserMatrics,
-    isEventMatricsLoading,
-    isUserMatricsLoading,
+    isLoading,
   ]);
 
   return (
@@ -257,7 +262,7 @@ const DashboardScreen = () => {
           <div className="col-sm-3 col-md-6 col-lg-3">
             <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style1 align-items-center">
               <div>
-                <h1>{todayEventCount ? todayEventCount : 0}</h1>
+                <h1>{eventLength?.todayEventCount}</h1>
                 <h5 style={{ fontSize: 17.5 }}>Today</h5>
               </div>
               <Icon
@@ -271,7 +276,7 @@ const DashboardScreen = () => {
           <div className="col-sm-3 col-md-6 col-lg-3 my-md-0 my-2">
             <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style2 align-items-center">
               <div>
-                <h1>{tomorrowEventCount ? tomorrowEventCount : 0}</h1>
+                <h1>{eventLength?.tomorrowEventCount}</h1>
                 <h5 style={{ fontSize: 17.5 }}>Tomorrow</h5>
               </div>
               <Icon
@@ -287,9 +292,7 @@ const DashboardScreen = () => {
           <div className="col-sm-3 col-md-6 col-lg-3 my-lg-0 my-2">
             <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style3 align-items-center">
               <div>
-                <h1>
-                  {((recentEventsLength * 100) / eventsTotalCount).toFixed(0)}%
-                </h1>
+                <h1>{`${completedCount}%`}</h1>
                 <h5 style={{ fontSize: 17.5 }}>Completed</h5>
               </div>
               <Icon icon="charm:tick" color="white" width="40" height="40" />
@@ -298,13 +301,7 @@ const DashboardScreen = () => {
           <div className="col-sm-3 col-md-6 col-lg-3 my-lg-0 my-2">
             <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style4 align-items-center">
               <div>
-                <h1>
-                  {(
-                    ((liveEventLength + upcomingEventsLength) * 100) /
-                    eventsTotalCount
-                  ).toFixed(0)}
-                  %
-                </h1>
+                <h1>{`${scheduledCount}%`}</h1>
                 <h5 style={{ fontSize: 17.5 }}>Scheduled</h5>
               </div>
               <Icon icon="gg:sand-clock" color="white" width="40" height="40" />
@@ -322,8 +319,52 @@ const DashboardScreen = () => {
               </div>
               <div id="chart">
                 <ReactApexChart
-                  options={eventsTabChartData?.options}
-                  series={eventsTabChartData?.series}
+                  options={{
+                    chart: {
+                      height: 350,
+                      type: "bar",
+                      events: {
+                        click: function (chart, w, e) {
+                          // console.log(chart, w, e)
+                        },
+                      },
+                    },
+                    colors: eventsTabColors,
+                    plotOptions: {
+                      bar: {
+                        columnWidth: "50%",
+                        distributed: true,
+                      },
+                    },
+                    dataLabels: {
+                      enabled: false,
+                    },
+                    legend: {
+                      show: false,
+                    },
+                    xaxis: {
+                      categories: [
+                        `Live ${eventLength?.liveEventLength}`,
+                        `Recent ${eventLength?.recentEventsLength}`,
+                        `Upcoming ${eventLength?.upcomingEventsLength}`,
+                      ],
+                      labels: {
+                        style: {
+                          colors: eventsTabColors,
+                          fontSize: "12px",
+                        },
+                      },
+                    },
+                  }}
+                  series={[
+                    {
+                      data: [
+                        eventLength?.liveEventLength,
+                        eventLength?.recentEventsLength,
+                        eventLength?.upcomingEventsLength,
+                      ],
+                    },
+                  ]}
                   type="bar"
                   height={350}
                 />
@@ -349,12 +390,14 @@ const DashboardScreen = () => {
                       className="pt-3 pb-3 pe-3"
                       style={{ fontWeight: "bold", marginBottom: 0 }}
                     >
-                      {teamMatrics?.Elementary +
-                        teamMatrics?.["Middle schools"] +
-                        teamMatrics?.["High schools"] +
-                        teamMatrics?.Schools +
-                        teamMatrics?.["Local Leagues"] +
-                        teamMatrics?.Travel}
+                      {teamMatrics
+                        ? teamMatrics?.Elementary +
+                          teamMatrics?.["Middle schools"] +
+                          teamMatrics?.["High schools"] +
+                          teamMatrics?.Schools +
+                          teamMatrics?.["Local Leagues"] +
+                          teamMatrics?.Travel
+                        : 0}
                     </h6>
                   </div>
                 </div>
@@ -386,7 +429,9 @@ const DashboardScreen = () => {
                       }}
                     >
                       <td>{"Local League"}</td>
-                      <td>{teamMatrics?.["Local Leagues"]}</td>
+                      <td>
+                        {teamMatrics ? teamMatrics?.["Local Leagues"] : 0}
+                      </td>
                     </tr>
                     <tr
                       style={{
@@ -394,7 +439,7 @@ const DashboardScreen = () => {
                       }}
                     >
                       <td>{"Travel"}</td>
-                      <td>{teamMatrics?.Travel}</td>
+                      <td>{teamMatrics ? teamMatrics?.Travel : 0}</td>
                     </tr>
                     <tr
                       style={{
@@ -403,10 +448,12 @@ const DashboardScreen = () => {
                     >
                       <td>{"Schools"}</td>
                       <td>
-                        {teamMatrics?.Elementary +
-                          teamMatrics?.["Middle schools"] +
-                          teamMatrics?.["High schools"] +
-                          teamMatrics?.Schools}
+                        {teamMatrics
+                          ? teamMatrics?.Elementary +
+                            teamMatrics?.["Middle schools"] +
+                            teamMatrics?.["High schools"] +
+                            teamMatrics?.Schools
+                          : 0}
                       </td>
                     </tr>
                     <tr
@@ -415,7 +462,7 @@ const DashboardScreen = () => {
                       }}
                     >
                       <td className="ps-5">{"- Elementary"}</td>
-                      <td>{teamMatrics?.Elementary}</td>
+                      <td>{teamMatrics ? teamMatrics?.Elementary : 0}</td>
                     </tr>
                     <tr
                       style={{
@@ -423,7 +470,9 @@ const DashboardScreen = () => {
                       }}
                     >
                       <td className="ps-5">{"- Middle Schools"}</td>
-                      <td>{teamMatrics?.["Middle schools"]}</td>
+                      <td>
+                        {teamMatrics ? teamMatrics?.["Middle schools"] : 0}
+                      </td>
                     </tr>
                     <tr
                       style={{
@@ -431,7 +480,7 @@ const DashboardScreen = () => {
                       }}
                     >
                       <td className="ps-5">{"- High School"}</td>
-                      <td>{teamMatrics?.["High schools"]}</td>
+                      <td>{teamMatrics ? teamMatrics?.["High schools"] : 0}</td>
                     </tr>
                     <tr
                       style={{
@@ -439,7 +488,7 @@ const DashboardScreen = () => {
                       }}
                     >
                       <td className="ps-5">{"- College"}</td>
-                      <td>{teamMatrics?.Schools}</td>
+                      <td>{teamMatrics ? teamMatrics?.Schools : 0}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -458,8 +507,54 @@ const DashboardScreen = () => {
               </div>
               <div id="chart">
                 <ReactApexChart
-                  options={userGraphChartData.options}
-                  series={userGraphChartData.series}
+                  options={{
+                    chart: {
+                      height: 350,
+                      type: "bar",
+                      events: {
+                        click: function (chart, w, e) {
+                          // console.log(chart, w, e)
+                        },
+                      },
+                    },
+                    colors: userMatricsColors,
+                    plotOptions: {
+                      bar: {
+                        columnWidth: "50%",
+                        distributed: true,
+                      },
+                    },
+                    dataLabels: {
+                      enabled: false,
+                    },
+                    legend: {
+                      show: false,
+                    },
+                    xaxis: {
+                      categories: [
+                        `Staff ${peoplesCount?.staffCount}`,
+                        `Coach ${peoplesCount?.coachCount}`,
+                        `Player ${peoplesCount?.playersCount}`,
+                        `Fan ${peoplesCount?.fanCount}`,
+                      ],
+                      labels: {
+                        style: {
+                          colors: userMatricsColors,
+                          fontSize: "12px",
+                        },
+                      },
+                    },
+                  }}
+                  series={[
+                    {
+                      data: [
+                        peoplesCount?.staffCount,
+                        peoplesCount?.coachCount,
+                        peoplesCount?.playersCount,
+                        peoplesCount?.fanCount,
+                      ],
+                    },
+                  ]}
                   type="bar"
                   height={350}
                 />
@@ -504,19 +599,35 @@ const DashboardScreen = () => {
               </div>
               <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
                 <span style={{ fontSize: FONT_SIZE.S }}>Staffs</span>
-                <span style={{ fontSize: FONT_SIZE.S }}>{staffCount}</span>
+                <span style={{ fontSize: FONT_SIZE.S }}>
+                  {eventsType === "all"
+                    ? peoplesCount?.staffCount
+                    : peoplesCount?.inivitedStaffCount}
+                </span>
               </div>
               <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
                 <span style={{ fontSize: FONT_SIZE.S }}>Coaches</span>
-                <span style={{ fontSize: FONT_SIZE.S }}>{coachCount}</span>
+                <span style={{ fontSize: FONT_SIZE.S }}>
+                  {eventsType === "all"
+                    ? peoplesCount?.coachCount
+                    : peoplesCount?.inivitedCoachCount}
+                </span>
               </div>
               <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
                 <span style={{ fontSize: FONT_SIZE.S }}>Players</span>
-                <span style={{ fontSize: FONT_SIZE.S }}>{playersCount}</span>
+                <span style={{ fontSize: FONT_SIZE.S }}>
+                  {eventsType === "all"
+                    ? peoplesCount?.playersCount
+                    : peoplesCount?.inivitedPlayersCount}
+                </span>
               </div>
               <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
                 <span style={{ fontSize: FONT_SIZE.S }}>Fans</span>
-                <span style={{ fontSize: FONT_SIZE.S }}>{fanCount}</span>
+                <span style={{ fontSize: FONT_SIZE.S }}>
+                  {eventsType === "all"
+                    ? peoplesCount?.fanCount
+                    : peoplesCount?.inivitedFanCount}
+                </span>
               </div>
             </div>
           </div>

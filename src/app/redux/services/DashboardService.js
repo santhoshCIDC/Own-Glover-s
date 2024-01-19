@@ -23,6 +23,13 @@ export const dashboardService = createApi({
         method: "GET",
       }),
     }),
+    getUserMatricsWithParams: builder.query({
+      query: (params) => ({
+        url: DASHBOARD_USER_MATRICS,
+        method: "GET",
+        params: params,
+      }),
+    }),
     getEventMatrics: builder.query({
       query: () => ({
         url: DASHBOARD_EVENT_MATRICS,
@@ -43,4 +50,5 @@ export const {
   useLazyGetUserMatricsQuery,
   useLazyGetEventMatricsQuery,
   useLazyGetTeamMatricsQuery,
+  useLazyGetUserMatricsWithParamsQuery,
 } = dashboardService;
