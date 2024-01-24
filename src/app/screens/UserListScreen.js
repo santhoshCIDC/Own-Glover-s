@@ -30,6 +30,16 @@ import {
 import RenderModal from "../components/RenderModal";
 
 const UserListScreen = () => {
+  // Global State
+  const coachesList = useSelector((state) => state.usersListState.coachesList);
+  const staffsList = useSelector((state) => state.usersListState.staffsList);
+  const playersList = useSelector((state) => state.usersListState.playersList);
+  const fansList = useSelector((state) => state.usersListState.fansList);
+  const teamResponsibility = useSelector(
+    (state) => state.usersListState.teamResponsibility
+  );
+
+  // Local State
   const EventsTab = [
     { id: 1, title: "Coach", type: "coach" },
     { id: 2, title: "Staff", type: "staff" },
@@ -42,6 +52,24 @@ const UserListScreen = () => {
   const [toggleOn, setToggleOn] = useState(false);
   const [activeModal, setActiveModal] = useState(false);
   const [activeItems, setActiveItems] = useState({});
+  const [eventsType, setEventsType] = useState("coach");
+  const [userStatusFilter, setUserStatusFilter] = useState("all");
+  const [responsibilityFilter, setResponsibilityFilter] = useState("");
+  const [userStatusCoachFilter, setUserStatusCoachFilter] =
+    useState(coachesList);
+  const [userStatusStaffFilter, setUserStatusStaffFilter] =
+    useState(staffsList);
+  const [responsibilityStaffFilter, setResponsibilityStaffFilter] =
+    useState(staffsList);
+  const [toggleOnModal, setToggleOnModal] = useState(false);
+  const [page, setPage] = useState({
+    currentPageForCoachList: 1,
+    currentPageForStaffList: 1,
+    currentPageForPlayerList: 1,
+    currentPageForFanList: 1,
+  });
+
+  // API call
   const [
     getCoachesList,
     { isFetching: isCoachFetching, isLoading: isCoachLoading, data: coachData },
@@ -74,22 +102,6 @@ const UserListScreen = () => {
     useUpdatePlayerStatusMutation();
   const [updateFanStatus, { isSuccess: isUpdateFanStatusSuccess }] =
     useUpdateFanStatusMutation();
-  const [page, setPage] = useState({
-    currentPageForCoachList: 1,
-    currentPageForStaffList: 1,
-    currentPageForPlayerList: 1,
-    currentPageForFanList: 1,
-  });
-  const [eventsType, setEventsType] = useState("coach");
-  const [toggleOnModal, setToggleOnModal] = useState(false);
-
-  const coachesList = useSelector((state) => state.usersListState.coachesList);
-  const staffsList = useSelector((state) => state.usersListState.staffsList);
-  const playersList = useSelector((state) => state.usersListState.playersList);
-  const fansList = useSelector((state) => state.usersListState.fansList);
-  const teamResponsibility = useSelector(
-    (state) => state.usersListState.teamResponsibility
-  );
 
   useEffect(() => {
     if (eventsType === "coach") {
@@ -115,34 +127,99 @@ const UserListScreen = () => {
   ]);
 
   useEffect(() => {
-    if (!isCoachLoading && coachData?.code === 0) {
-      dispatch(getCoachesListDispatch(coachData?.data));
+    if (eventsType === "coach") {
+      if (!isCoachLoading && coachData?.code === 0) {
+        dispatch(getCoachesListDispatch(coachData?.data));
+      }
+    } else if (eventsType === "staff") {
+      if (!isStaffLoading && staffData?.code === 0) {
+        dispatch(getStaffsListDispatch(staffData?.data));
+      }
+    } else if (eventsType === "player") {
+      if (!isPlayerLoading && playerData?.code === 0) {
+        dispatch(getPlayersListDispatch(playerData?.data));
+      }
+    } else {
+      if (!isFanLoading && fanData?.code === 0) {
+        dispatch(getFansListDispatch(fanData?.data));
+      }
     }
-  }, [isCoachFetching, isUpdateCoachStatusSuccess]);
-
-  useEffect(() => {
-    if (!isStaffLoading && staffData?.code === 0) {
-      dispatch(getStaffsListDispatch(staffData?.data));
-    }
-  }, [isStaffFetching, isUpdateStaffStatusSuccess]);
-
-  useEffect(() => {
-    if (!isPlayerLoading && playerData?.code === 0) {
-      dispatch(getPlayersListDispatch(playerData?.data));
-    }
-  }, [isPlayerFetching, isUpdatePlayerStatusSuccess]);
-
-  useEffect(() => {
-    if (!isFanLoading && fanData?.code === 0) {
-      dispatch(getFansListDispatch(fanData?.data));
-    }
-  }, [isFanFetching, isUpdateFanStatusSuccess]);
+  }, [
+    isCoachFetching,
+    isUpdateCoachStatusSuccess,
+    isStaffFetching,
+    isUpdateStaffStatusSuccess,
+    isPlayerFetching,
+    isUpdatePlayerStatusSuccess,
+    isFanFetching,
+    isUpdateFanStatusSuccess,
+  ]);
 
   useEffect(() => {
     if (!isTeamResponsibilityLoading && isTeamResponsibilityData?.code === 0) {
       dispatch(teamResponsibilityDispatch(isTeamResponsibilityData?.data));
     }
   }, [isTeamResponsibilityLoading]);
+
+  useEffect(() => {
+    const activeCoaches = coachesList.filter((item) => item.status);
+    const deActiveCoaches = coachesList.filter((item) => !item.status);
+    const activeStaffs = staffsList.filter((item) => item.status);
+    const deActiveStaffs = staffsList.filter((item) => !item.status);
+    if (userStatusFilter === "all") {
+      if (eventsType === "coach") {
+        setUserStatusCoachFilter(coachesList);
+      } else if (eventsType === "staff") {
+        setUserStatusStaffFilter(staffsList);
+      }
+    } else if (userStatusFilter === "activeUsers") {
+      if (eventsType === "coach") {
+        setUserStatusCoachFilter(activeCoaches);
+      } else if (eventsType === "staff") {
+        setUserStatusStaffFilter(activeStaffs);
+      }
+    } else if (userStatusFilter === "deactiveUsers") {
+      if (eventsType === "coach") {
+        setUserStatusCoachFilter(deActiveCoaches);
+      } else if (eventsType === "staff") {
+        setUserStatusStaffFilter(deActiveStaffs);
+      }
+    }
+  }, [
+    userStatusFilter,
+    getCoachesList,
+    eventsType,
+    responsibilityFilter === null,
+  ]);
+
+  useEffect(() => {
+    const bActiveStaffs = staffsList.filter((item) => item.responsibility.b);
+    const pcActiveStaffs = staffsList.filter((item) => item.responsibility.pc);
+    const scActiveStaffs = staffsList.filter((item) => item.responsibility.sc);
+    const vsActiveStaffs = staffsList.filter((item) => item.responsibility.vs);
+
+    if (responsibilityFilter === "") {
+      if (eventsType === "staff") {
+        setResponsibilityStaffFilter(staffsList);
+      }
+    } else if (responsibilityFilter === "b") {
+      if (eventsType === "staff") {
+        setResponsibilityStaffFilter(bActiveStaffs);
+      }
+    } else if (responsibilityFilter === "pc") {
+      if (eventsType === "staff") {
+        setResponsibilityStaffFilter(pcActiveStaffs);
+      }
+    } else if (responsibilityFilter === "sc") {
+      if (eventsType === "staff") {
+        setResponsibilityStaffFilter(scActiveStaffs);
+      }
+    } else if (responsibilityFilter === "vs") {
+      if (eventsType === "staff") {
+        setResponsibilityStaffFilter(vsActiveStaffs);
+      }
+    }
+  }, [responsibilityFilter, getCoachesList, eventsType]);
 
   const paginate = (number, type) => {
     if (type === "Coach") {
@@ -255,7 +332,7 @@ const UserListScreen = () => {
           </div>
           <div className="container-fluid border">
             <div className=" d-flex align-items-center border-bottom">
-              <div className="d-lg-flex col-sm-12 align-items-center justify-content-between my-3">
+              <div className="d-xl-flex col-sm-12 align-items-center justify-content-between my-3">
                 <div className="d-flex align-items-center">
                   {EventsTab.map((item, index) => (
                     <button
@@ -268,7 +345,11 @@ const UserListScreen = () => {
                         cursor:
                           eventsType === item.type ? "default" : "pointer",
                       }}
-                      onClick={() => setEventsType(item.type)}
+                      onClick={() => {
+                        setEventsType(item.type);
+                        setUserStatusFilter("all");
+                        setResponsibilityFilter("b");
+                      }}
                     >
                       <h6
                         className={`fw-bold text-nowrap ${
@@ -289,12 +370,159 @@ const UserListScreen = () => {
                     }}
                     CloseBtnOnClick={() => setIsSearch("")}
                   />
+                  <div class="dropdown">
+                    <button
+                      type="button"
+                      className="btn btn-primary dropdown-toggle d-flex align-items-center ms-sm-3 ms-0"
+                      data-bs-toggle="dropdown"
+                      style={{
+                        fontSize: FONT_SIZE.S,
+                        minWidth: "fit-content",
+                        backgroundColor: "#42bcd4",
+                        borderColor: "#42bcd4",
+                      }}
+                    >
+                      <Icon
+                        className="me-2"
+                        icon="la:id-card"
+                        color="white"
+                        width="20"
+                        height="20"
+                      />
+                      User Status
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <div
+                          className="d-flex align-items-center"
+                          style={{ margin: "5px" }}
+                          onClick={() => {
+                            setUserStatusFilter("all");
+                            setResponsibilityStaffFilter(null);
+                          }}
+                        >
+                          <Icon icon="la:id-card" width="20" height="20" />
+                          <span className="user-filter">All</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div
+                          className="d-flex align-items-center"
+                          style={{ margin: "5px" }}
+                          onClick={() => {
+                            setUserStatusFilter("activeUsers");
+                            setResponsibilityStaffFilter(null);
+                          }}
+                        >
+                          <Icon icon="la:id-card" width="20" height="20" />
+                          <span className="user-filter">Activated Users</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div
+                          className="d-flex align-items-center"
+                          style={{ margin: "5px" }}
+                          onClick={() => {
+                            setUserStatusFilter("deactiveUsers");
+                            setResponsibilityStaffFilter(null);
+                          }}
+                        >
+                          <Icon icon="la:id-card" width="20" height="20" />
+                          <span className="user-filter">Deactivated Users</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  {eventsType === "staff" && (
+                    <div class="dropdown">
+                      <button
+                        type="button"
+                        className="btn btn-primary d-flex align-items-center ms-sm-3 ms-0"
+                        data-bs-toggle="dropdown"
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                          minWidth: "fit-content",
+                          backgroundColor: "#673ab7",
+                          borderColor: "#673ab7",
+                        }}
+                      >
+                        <Icon
+                          className="me-2"
+                          icon="cil:tag"
+                          color="white"
+                          width="16"
+                          height="16"
+                        />
+                        Responsibility
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <div
+                            className="d-flex align-items-center"
+                            style={{ margin: "5px" }}
+                            onClick={() => {
+                              setResponsibilityFilter("b");
+                              setUserStatusStaffFilter(null);
+                            }}
+                          >
+                            <Icon icon="cil:tag" width="20" height="20" />
+                            <span className="user-filter">b</span>
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className="d-flex align-items-center"
+                            style={{ margin: "5px" }}
+                            onClick={() => {
+                              setResponsibilityFilter("pc");
+                              setUserStatusStaffFilter(null);
+                            }}
+                          >
+                            <Icon icon="cil:tag" width="20" height="20" />
+                            <span className="user-filter">pc</span>
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className="d-flex align-items-center"
+                            style={{ margin: "5px" }}
+                            onClick={() => {
+                              setResponsibilityFilter("sc");
+                              setUserStatusStaffFilter(null);
+                            }}
+                          >
+                            <Icon icon="cil:tag" width="20" height="20" />
+                            <span className="user-filter">sc</span>
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className="d-flex align-items-center"
+                            style={{ margin: "5px" }}
+                            onClick={() => {
+                              setResponsibilityFilter("vs");
+                              setUserStatusStaffFilter(null);
+                            }}
+                          >
+                            <Icon icon="cil:tag" width="20" height="20" />
+                            <span className="user-filter">vc</span>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                   <button
                     type="button"
-                    className="btn btn-primary d-flex align-items-center ms-5 me-xl-5 me-0"
-                    style={{ fontSize: FONT_SIZE.S, minWidth: "fit-content" }}
+                    className="btn btn-primary d-flex align-items-center ms-sm-3 ms-0 me-xl-5 me-0"
+                    style={{
+                      fontSize: FONT_SIZE.S,
+                      minWidth: "fit-content",
+                      backgroundColor: "#3796f3",
+                      borderColor: "#3796f3",
+                    }}
                   >
                     <Icon
+                      className="me-2"
                       icon="ion:document-text-outline"
                       color="white"
                       width="16"
@@ -335,7 +563,7 @@ const UserListScreen = () => {
                           </div>
                         ) : (
                           <>
-                            {coachesList?.length === 0 ? (
+                            {userStatusCoachFilter?.length === 0 ? (
                               <h6 className="my-3 d-flex justify-content-center">
                                 No coaches found
                               </h6>
@@ -383,6 +611,16 @@ const UserListScreen = () => {
                                         }}
                                       >
                                         Email
+                                      </th>
+                                      <th
+                                        className={
+                                          "bg-light border-top border-bottom py-2 ps-2"
+                                        }
+                                        style={{
+                                          fontSize: FONT_SIZE.S,
+                                        }}
+                                      >
+                                        Subscription Status
                                       </th>
                                       <th
                                         className={
@@ -461,7 +699,7 @@ const UserListScreen = () => {
                                                                   FONT_SIZE.S,
                                                               }}
                                                             >
-                                                              Status
+                                                              User Status
                                                             </th>
                                                           </tr>
                                                           <tbody>
@@ -618,94 +856,124 @@ const UserListScreen = () => {
                                       )}
                                     </tr>
                                     <tbody>
-                                      {coachesList
-                                        .slice(
-                                          indexOfFirstPostForCoachList,
-                                          indexOfLastPostForCoachList
-                                        )
-                                        .map((item, index) => (
-                                          <tr
-                                            key={index}
-                                            style={{
-                                              fontSize: FONT_SIZE.S,
-                                            }}
-                                          >
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
+                                      {userStatusCoachFilter &&
+                                        userStatusCoachFilter
+                                          .slice(
+                                            indexOfFirstPostForCoachList,
+                                            indexOfLastPostForCoachList
+                                          )
+                                          .map((item, index) => (
+                                            <tr
+                                              key={index}
+                                              style={{
+                                                fontSize: FONT_SIZE.S,
+                                              }}
                                             >
-                                              {(
-                                                (page?.currentPageForCoachList -
-                                                  1) *
-                                                  10 +
-                                                index +
-                                                1
-                                              )
-                                                .toString()
-                                                .padStart(2, "0")}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              {item.first_name}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              {item.last_name}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              {item.email}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              <button
-                                                type="button"
+                                              <td
                                                 className={
-                                                  "btn btn-primarys p-1 px-2"
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
                                                 }
-                                                onClick={() => {
-                                                  onClickView(item);
-                                                  setActiveModal(true);
-                                                }}
-                                                style={{
-                                                  cursor: "pointer",
-                                                }}
                                               >
-                                                View
-                                              </button>
-                                            </td>
-                                          </tr>
-                                        ))}
+                                                {(
+                                                  (page?.currentPageForCoachList -
+                                                    1) *
+                                                    10 +
+                                                  index +
+                                                  1
+                                                )
+                                                  .toString()
+                                                  .padStart(2, "0")}
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                {item.first_name}
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                {item.last_name}
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                {item.email}
+                                              </td>
+                                              {item.is_subscribe ? (
+                                                <td
+                                                  className={
+                                                    item.status
+                                                      ? " table-row-active text-nowrap"
+                                                      : "table-row-deactive text-nowrap"
+                                                  }
+                                                  style={{
+                                                    color: "green",
+                                                    fontWeight: "bold",
+                                                  }}
+                                                >
+                                                  Active
+                                                </td>
+                                              ) : (
+                                                <td
+                                                  className={
+                                                    item.status
+                                                      ? " table-row-active text-nowrap"
+                                                      : "table-row-deactive text-nowrap"
+                                                  }
+                                                  style={{
+                                                    color: "red",
+                                                    fontWeight: "bold",
+                                                  }}
+                                                >
+                                                  InActive
+                                                </td>
+                                              )}
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                <button
+                                                  type="button"
+                                                  className={
+                                                    "btn btn-primarys p-1 px-2"
+                                                  }
+                                                  onClick={() => {
+                                                    onClickView(item);
+                                                    setActiveModal(true);
+                                                  }}
+                                                  style={{
+                                                    cursor: "pointer",
+                                                  }}
+                                                >
+                                                  View
+                                                </button>
+                                              </td>
+                                            </tr>
+                                          ))}
                                     </tbody>
                                   </table>
                                 </div>
                                 <div className="d-sm-flex justify-content-between">
                                   {renderActivatedAndDeactivated()}
-                                  {coachesList !== undefined &&
-                                    coachesList?.length > 10 && (
+                                  {userStatusCoachFilter !== undefined &&
+                                    userStatusCoachFilter?.length > 10 && (
                                       <div
                                         style={{
                                           display: "flex",
@@ -715,7 +983,9 @@ const UserListScreen = () => {
                                       >
                                         <Pagination
                                           itemsPerPage={itemsPerPage}
-                                          totalItems={coachesList?.length}
+                                          totalItems={
+                                            userStatusCoachFilter?.length
+                                          }
                                           paginate={paginate}
                                           currentPage={
                                             page?.currentPageForCoachList
@@ -763,7 +1033,9 @@ const UserListScreen = () => {
                           </div>
                         ) : (
                           <>
-                            {staffsList?.length === 0 ? (
+                            {(
+                              userStatusStaffFilter || responsibilityStaffFilter
+                            )?.length === 0 ? (
                               <h6 className="my-3 d-flex justify-content-center">
                                 No staffs found
                               </h6>
@@ -840,168 +1112,185 @@ const UserListScreen = () => {
                                           fontSize: FONT_SIZE.S,
                                         }}
                                       >
-                                        Action
+                                        User Status
                                       </th>
                                       {renderModal()}
                                     </tr>
                                     <tbody>
-                                      {staffsList
-                                        .slice(
-                                          indexOfFirstPostForStaffList,
-                                          indexOfLastPostForStaffList
+                                      {(userStatusStaffFilter ||
+                                        responsibilityStaffFilter) &&
+                                        (
+                                          userStatusStaffFilter ||
+                                          responsibilityStaffFilter
                                         )
-                                        .map((item, index) => (
-                                          <tr
-                                            key={index}
-                                            style={{
-                                              fontSize: FONT_SIZE.S,
-                                            }}
-                                          >
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
+                                          .slice(
+                                            indexOfFirstPostForStaffList,
+                                            indexOfLastPostForStaffList
+                                          )
+                                          .map((item, index) => (
+                                            <tr
+                                              key={index}
+                                              style={{
+                                                fontSize: FONT_SIZE.S,
+                                              }}
                                             >
-                                              {(
-                                                (page?.currentPageForStaffList -
-                                                  1) *
-                                                  10 +
-                                                index +
-                                                1
-                                              )
-                                                .toString()
-                                                .padStart(2, "0")}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              {item.first_name}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              {item.last_name}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              {item.email}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              {item.team_name}
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              <div className="d-flex align-items-center">
-                                                <span className="ms-1">b</span>
-                                                <div
-                                                  className="ms-1"
-                                                  style={{
-                                                    height: 15,
-                                                    width: 15,
-                                                    backgroundColor: item
-                                                      .responsibility.b
-                                                      ? "#2bd144"
-                                                      : "red",
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                {(
+                                                  (page?.currentPageForStaffList -
+                                                    1) *
+                                                    10 +
+                                                  index +
+                                                  1
+                                                )
+                                                  .toString()
+                                                  .padStart(2, "0")}
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                {item.first_name}
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                {item.last_name}
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                {item.email}
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                {item.team_name}
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                <div className="d-flex align-items-center">
+                                                  <span className="ms-1">
+                                                    b
+                                                  </span>
+                                                  <div
+                                                    className="ms-1"
+                                                    style={{
+                                                      height: 15,
+                                                      width: 15,
+                                                      backgroundColor: item
+                                                        .responsibility.b
+                                                        ? "#2bd144"
+                                                        : "red",
+                                                    }}
+                                                  />
+                                                  <span className="ms-1">
+                                                    pc
+                                                  </span>
+                                                  <div
+                                                    className="ms-1"
+                                                    style={{
+                                                      height: 15,
+                                                      width: 15,
+                                                      backgroundColor: item
+                                                        .responsibility.pc
+                                                        ? "#2bd144"
+                                                        : "red",
+                                                    }}
+                                                  />
+                                                  <span className="ms-1">
+                                                    sc
+                                                  </span>
+                                                  <div
+                                                    className="ms-1"
+                                                    style={{
+                                                      height: 15,
+                                                      width: 15,
+                                                      backgroundColor: item
+                                                        .responsibility.sc
+                                                        ? "#2bd144"
+                                                        : "red",
+                                                    }}
+                                                  />
+                                                  <span className="ms-1">
+                                                    vs
+                                                  </span>
+                                                  <div
+                                                    className="ms-1"
+                                                    style={{
+                                                      height: 15,
+                                                      width: 15,
+                                                      backgroundColor: item
+                                                        .responsibility.vs
+                                                        ? "#2bd144"
+                                                        : "red",
+                                                    }}
+                                                  />
+                                                </div>
+                                              </td>
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                              >
+                                                <Switch
+                                                  key={item}
+                                                  checked={item.status}
+                                                  onColor="#2bd144"
+                                                  offColor="#ff0707"
+                                                  checkedIcon={false}
+                                                  handleDiameter={21}
+                                                  height={25}
+                                                  uncheckedIcon={false}
+                                                  onChange={() => {
+                                                    setToggleOn(
+                                                      item.status ? false : true
+                                                    );
+                                                    setActiveItems(item);
+                                                    setToggleOnModal(true);
                                                   }}
                                                 />
-                                                <span className="ms-1">pc</span>
-                                                <div
-                                                  className="ms-1"
-                                                  style={{
-                                                    height: 15,
-                                                    width: 15,
-                                                    backgroundColor: item
-                                                      .responsibility.pc
-                                                      ? "#2bd144"
-                                                      : "red",
-                                                  }}
-                                                />
-                                                <span className="ms-1">sc</span>
-                                                <div
-                                                  className="ms-1"
-                                                  style={{
-                                                    height: 15,
-                                                    width: 15,
-                                                    backgroundColor: item
-                                                      .responsibility.sc
-                                                      ? "#2bd144"
-                                                      : "red",
-                                                  }}
-                                                />
-                                                <span className="ms-1">vs</span>
-                                                <div
-                                                  className="ms-1"
-                                                  style={{
-                                                    height: 15,
-                                                    width: 15,
-                                                    backgroundColor: item
-                                                      .responsibility.vs
-                                                      ? "#2bd144"
-                                                      : "red",
-                                                  }}
-                                                />
-                                              </div>
-                                            </td>
-                                            <td
-                                              className={
-                                                item.status
-                                                  ? " table-row-active text-nowrap"
-                                                  : "table-row-deactive text-nowrap"
-                                              }
-                                            >
-                                              <Switch
-                                                key={item}
-                                                checked={item.status}
-                                                onColor="#2bd144"
-                                                offColor="#ff0707"
-                                                checkedIcon={false}
-                                                handleDiameter={21}
-                                                height={25}
-                                                uncheckedIcon={false}
-                                                onChange={() => {
-                                                  setToggleOn(
-                                                    item.status ? false : true
-                                                  );
-                                                  setActiveItems(item);
-                                                  setToggleOnModal(true);
-                                                }}
-                                              />
-                                            </td>
-                                          </tr>
-                                        ))}
+                                              </td>
+                                            </tr>
+                                          ))}
                                     </tbody>
                                   </table>
                                 </div>
                                 <div className="d-sm-flex justify-content-between">
                                   {renderActivatedAndDeactivated()}
-                                  {staffsList !== undefined &&
-                                    staffsList?.length > 10 && (
+                                  {(userStatusStaffFilter ||
+                                    responsibilityStaffFilter) !== undefined &&
+                                    (
+                                      userStatusStaffFilter ||
+                                      responsibilityStaffFilter
+                                    )?.length > 10 && (
                                       <div
                                         style={{
                                           display: "flex",
@@ -1011,7 +1300,10 @@ const UserListScreen = () => {
                                       >
                                         <Pagination
                                           itemsPerPage={itemsPerPage}
-                                          totalItems={staffsList?.length}
+                                          totalItems={
+                                            userStatusStaffFilter?.length ||
+                                            responsibilityStaffFilter?.length
+                                          }
                                           paginate={paginate}
                                           currentPage={
                                             page?.currentPageForStaffList
@@ -1156,7 +1448,7 @@ const UserListScreen = () => {
                                           fontSize: FONT_SIZE.S,
                                         }}
                                       >
-                                        Action
+                                        User Status
                                       </th>
                                       {renderModal()}
                                     </tr>
@@ -1411,7 +1703,17 @@ const UserListScreen = () => {
                                           fontSize: FONT_SIZE.S,
                                         }}
                                       >
-                                        Action
+                                        Subscription Status
+                                      </th>
+                                      <th
+                                        className={
+                                          "bg-light border-top border-bottom py-2 ps-2"
+                                        }
+                                        style={{
+                                          fontSize: FONT_SIZE.S,
+                                        }}
+                                      >
+                                        User Status
                                       </th>
                                       {renderModal()}
                                     </tr>
@@ -1481,6 +1783,35 @@ const UserListScreen = () => {
                                             >
                                               {item.team_name}
                                             </td>
+                                            {item.is_subscribe ? (
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                                style={{
+                                                  color: "green",
+                                                  fontWeight: "bold",
+                                                }}
+                                              >
+                                                Active
+                                              </td>
+                                            ) : (
+                                              <td
+                                                className={
+                                                  item.status
+                                                    ? " table-row-active text-nowrap"
+                                                    : "table-row-deactive text-nowrap"
+                                                }
+                                                style={{
+                                                  color: "red",
+                                                  fontWeight: "bold",
+                                                }}
+                                              >
+                                                InActive
+                                              </td>
+                                            )}
                                             <td
                                               className={
                                                 item.status

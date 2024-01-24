@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useRefreshTokenMutation } from "../redux/services/AuthService";
 import { setRefreshToken } from "../redux/slices/AuthSlice";
 // import { useAppSelector } from "../redux/store";
-
+import { motion } from "framer-motion";
 const SplashScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -45,16 +45,21 @@ const SplashScreen = () => {
       }}
     >
       <div className="SplashContainer">
-        <img
-          className="GloversLogo"
-          alt="gloverslogo"
-          src={require("../assets/gloverslogo.png")}
-        />
-        <img
-          className="SplashLogo"
-          alt="baseball"
-          src={require("../assets/baseball.gif")}
-        />
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <img
+            className="GloversLogo"
+            alt="gloverslogo"
+            src={require("../assets/gloverslogo.png")}
+          />
+          <img
+            className="SplashLogo"
+            alt="baseball"
+            src={require("../assets/baseball.gif")}
+          />
+        </motion.div>
       </div>
     </div>
   );

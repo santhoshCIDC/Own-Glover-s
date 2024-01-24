@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import baseballGround from "../assets/bg.png";
 import { Button, Card } from "react-bootstrap";
+import { motion } from "framer-motion";
 import Utility, { ToastMessage } from "../utils/Utility";
 import { COLOR, FONT_SIZE } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
@@ -66,6 +67,10 @@ const LoginScreen = () => {
     >
       <div className="row">
         <div className="col-4"></div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
         <Card
           className="col-4 "
           style={{
@@ -145,6 +150,7 @@ const LoginScreen = () => {
             </h6>
           </Card>
         </Card>
+        </motion.div>
         <div className="col-4"></div>
       </div>
       {ToastMessage()}

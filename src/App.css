@@ -240,6 +240,23 @@ input::-webkit-inner-spin-button {
 .table-row-deactive {
   background-color: #f7f5ff !important;
 }
+.user-filter {
+  background-color: #efefef !important;
+  font-size: 14px !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  margin: 5px;
+  cursor: pointer;
+}
+.dropdown-menu {
+  background-color: white !important;
+  position: absolute;
+  inset: 0px auto auto 0px;
+  margin: 0px;
+  transform: translate(16px, 37px);
+  width: max-content;
+  min-width: auto !important;
+}
 .custom-popover {
   --bs-popover-max-width: 200px;
   --bs-popover-border-color: var(--bd-violet-bg);

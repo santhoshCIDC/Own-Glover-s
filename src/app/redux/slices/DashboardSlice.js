@@ -7,7 +7,9 @@ const initialState = {
   dashboardUserMatrics: !localStorage.getItem("dashboardUserMatrics")
     ? JSON.parse(localStorage.getItem("dashboardUserMatrics"))
     : null,
-  dashboardUserMatricsWithParams: !localStorage.getItem("dashboardUserMatricsWithParams")
+  dashboardUserMatricsWithParams: !localStorage.getItem(
+    "dashboardUserMatricsWithParams"
+  )
     ? JSON.parse(localStorage.getItem("dashboardUserMatricsWithParams"))
     : null,
   dashboardEventMatrics: !localStorage.getItem("dashboardEventMatrics")
@@ -15,6 +17,9 @@ const initialState = {
     : null,
   dashboardTeamMatrics: !localStorage.getItem("dashboardTeamMatrics")
     ? localStorage.getItem("dashboardTeamMatrics")
+    : null,
+  dashboardRoleMatrics: !localStorage.getItem("dashboardRoleMatrics")
+    ? localStorage.getItem("dashboardRoleMatrics")
     : null,
 };
 
@@ -57,6 +62,13 @@ export const dashboardSlice = createSlice({
       );
       state.dashboardTeamMatrics = action.payload;
     },
+    getDashboardRoleMatricsDispatch: (state, action) => {
+      localStorage.setItem(
+        "dashboardRoleMatrics",
+        JSON.stringify(action.payload)
+      );
+      state.dashboardRoleMatrics = action.payload;
+    },
   },
 });
 
@@ -68,4 +80,5 @@ export const {
   getDashboardEventMatricsDispatch,
   getDashboardTeamMatricsDispatch,
   getDashboardUserMatricsWithParamsDispatch,
+  getDashboardRoleMatricsDispatch,
 } = dashboardSlice.actions;

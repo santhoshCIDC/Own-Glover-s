@@ -6,6 +6,7 @@ import ReactApexChart from "react-apexcharts";
 import {
   useLazyGetEventMatricsQuery,
   useLazyGetEventsTabQuery,
+  useLazyGetRoleMatricsQuery,
   useLazyGetTeamMatricsQuery,
   useLazyGetUserMatricsQuery,
   useLazyGetUserMatricsWithParamsQuery,
@@ -14,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getDashboardEventMatricsDispatch,
   getDashboardEventsTabDispatch,
+  getDashboardRoleMatricsDispatch,
   getDashboardTeamMatricsDispatch,
   getDashboardUserMatricsDispatch,
   getDashboardUserMatricsWithParamsDispatch,
@@ -33,7 +35,7 @@ const DashboardScreen = () => {
     todayEventCount: 0,
     tomorrowEventCount: 0,
   };
-  const initialStateOfPeoplesCount = {
+  const initialStateOfUserMatricsCount = {
     staffCount: 0,
     coachCount: 0,
     playersCount: 0,
@@ -43,7 +45,12 @@ const DashboardScreen = () => {
     inivitedPlayersCount: 0,
     inivitedFanCount: 0,
   };
-
+  const initialStateOfRoleMatricsCount = {
+    videoStreamCount: 0,
+    scorerCount: 0,
+    pcKeeperCount: 0,
+    keeperCount: 0,
+  };
   //Local state
   const eventsTabColors = ["#1E9F4D", "#E2922F", "#E573A4"];
   const userMatricsColors = ["#f87979", "#8843EC", "#B250FF", "#38A6DA"];
@@ -51,7 +58,12 @@ const DashboardScreen = () => {
   const [isSearch, setIsSearch] = useState("");
   const [eventsTotalCount, setEventsTotalCount] = useState(0);
   const [eventLength, setEventLength] = useState(initialStateOfEventLegnth);
-  const [peoplesCount, setPeoplesCount] = useState(initialStateOfPeoplesCount);
+  const [userMatricsCount, setUserMatricsCount] = useState(
+    initialStateOfUserMatricsCount
+  );
+  const [roleMatricsCount, setRoleMatricsCount] = useState(
+    initialStateOfRoleMatricsCount
+  );
   const [completedCount, setCompletedCount] = useState(0);
   const [scheduledCount, setScheduledCount] = useState(0);
   const [eventsType, setEventsType] = useState("all");
@@ -79,7 +91,10 @@ const DashboardScreen = () => {
     getDashboardTeamMatrics,
     { data: isTeamMatricsData, isLoading: isTeamMatricsLoading },
   ] = useLazyGetTeamMatricsQuery();
-
+  const [
+    getDashboardRoleMatrics,
+    { data: isRoleMatricsData, isLoading: isRoleMatricsLoading },
+  ] = useLazyGetRoleMatricsQuery();
   //Global State
   const eventsTabList = useSelector(
     (state) => state.dashboardEventsTabState.dashboardEventsTab
@@ -97,6 +112,9 @@ const DashboardScreen = () => {
   const teamMatrics = useSelector(
     (state) => state.dashboardTeamMatricsState.dashboardTeamMatrics
   );
+  const roleMatrics = useSelector(
+    (state) => state.dashboardRoleMatricsState.dashboardRoleMatrics
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -104,9 +122,56 @@ const DashboardScreen = () => {
       await getDashboardUserMatrics({});
       await getDashboardEventMatrics({});
       await getDashboardTeamMatrics({});
+      await getDashboardRoleMatrics({});
     }
     fetchData();
   }, []);
+
+  useEffect(() => {
+    setEventLength({
+      ...eventLength,
+      liveEventLength: eventsTabList?.live?.length,
+      recentEventsLength: eventsTabList?.recent?.length,
+      upcomingEventsLength: eventsTabList?.upcoming?.length,
+      todayEventCount: eventMatrics ? eventMatrics[0]?.count : "0",
+      tomorrowEventCount: eventMatrics ? eventMatrics[1]?.count : "0",
+    });
+
+    setUserMatricsCount({
+      ...userMatricsCount,
+      staffCount: userMatrics ? userMatrics[0]?.count : "0",
+      coachCount: userMatrics ? userMatrics[1]?.count : "0",
+      playersCount: userMatrics ? userMatrics[3]?.count : "0",
+      fanCount: userMatrics ? userMatrics[2]?.count : "0",
+      inivitedStaffCount: userMatricsWithParams
+        ? userMatricsWithParams[0]?.count
+        : "0",
+      inivitedCoachCount: userMatricsWithParams
+        ? userMatricsWithParams[1]?.count
+        : "0",
+      inivitedPlayersCount: userMatricsWithParams
+        ? userMatricsWithParams[3]?.count
+        : "0",
+      inivitedFanCount: userMatricsWithParams
+        ? userMatricsWithParams[2]?.count
+        : "0",
+    });
+    setRoleMatricsCount({
+      ...roleMatricsCount,
+      videoStreamCount: roleMatrics ? roleMatrics?.videoStreamer : "0",
+      scorerCount: roleMatrics ? roleMatrics.scorer : "0",
+      pcKeeperCount: roleMatrics ? roleMatrics?.pitchCountKeeper : "0",
+      keeperCount: roleMatrics ? roleMatrics?.battingInfoKeeper : "0",
+    });
+  }, [
+    isUserMatricsFetchingWithParams,
+    isUserMatricsLoading,
+    getDashboardUserMatricsWithParams,
+    userMatricsWithParams,
+    isRoleMatricsLoading,
+    getDashboardRoleMatrics,
+    roleMatrics,
+  ]);
 
   useEffect(() => {
     if (!isLoading && data?.code === 0) {
@@ -131,58 +196,27 @@ const DashboardScreen = () => {
         )
       );
     }
-    setEventLength({
-      ...eventLength,
-      liveEventLength: eventsTabList?.live?.length,
-      recentEventsLength: eventsTabList?.recent?.length,
-      upcomingEventsLength: eventsTabList?.upcoming?.length,
-      todayEventCount: eventMatrics ? eventMatrics[0]?.count : "0",
-      tomorrowEventCount: eventMatrics ? eventMatrics[1]?.count : "0",
-    });
-
-    setPeoplesCount({
-      ...peoplesCount,
-      staffCount: userMatrics ? userMatrics[0]?.count : "0",
-      coachCount: userMatrics ? userMatrics[1]?.count : "0",
-      playersCount: userMatrics ? userMatrics[3]?.count : "0",
-      fanCount: userMatrics ? userMatrics[2]?.count : "0",
-      inivitedStaffCount: userMatricsWithParams
-        ? userMatricsWithParams[0]?.count
-        : "0",
-      inivitedCoachCount: userMatricsWithParams
-        ? userMatricsWithParams[1]?.count
-        : "0",
-      inivitedPlayersCount: userMatricsWithParams
-        ? userMatricsWithParams[3]?.count
-        : "0",
-      inivitedFanCount: userMatricsWithParams
-        ? userMatricsWithParams[2]?.count
-        : "0",
-    });
+    if (!isRoleMatricsLoading && isRoleMatricsData?.code === 0) {
+      dispatch(getDashboardRoleMatricsDispatch(isRoleMatricsData?.data));
+    }
   }, [
+    isUserMatricsFetchingWithParams,
+    isUserMatricsLoading,
     isEventMatricsLoading,
-    isLoading,
     isTeamMatricsLoading,
     isUserMatricsLoading,
-    isUserMatricsFetchingWithParams,
-    data?.code,
+    isLoading,
     data?.data,
-    isUserMatricsData?.code,
     isUserMatricsData?.data,
-    isEventMatricsData?.code,
     isEventMatricsData?.data,
-    isTeamMatricsData?.code,
     isTeamMatricsData?.data,
-    isUserMatricsDataWithParams?.code,
+    isRoleMatricsData?.data,
     isUserMatricsDataWithParams?.data,
-    eventLength,
-    eventsTabList?.live?.length,
-    eventsTabList?.recent?.length,
-    eventsTabList?.upcoming?.length,
-    eventMatrics,
-    peoplesCount,
-    userMatrics,
-    userMatricsWithParams,
+    data?.code,
+    isUserMatricsData?.code,
+    isEventMatricsData?.code,
+    isTeamMatricsData?.code,
+    isUserMatricsDataWithParams?.code,
     dispatch,
   ]);
 
@@ -215,6 +249,7 @@ const DashboardScreen = () => {
     eventsTotalCount,
     getDashboardEventsTab,
     isLoading,
+    isUserMatricsFetchingWithParams,
   ]);
 
   return (
@@ -245,7 +280,7 @@ const DashboardScreen = () => {
             height="20"
           />
           <p style={{ fontSize: FONT_SIZE.XS }}>Live:</p>
-          <a className="ms-2" style={{ fontSize: FONT_SIZE.XS }} href="">
+          <a className="ms-2" style={{ fontSize: FONT_SIZE.XS }} href="/eventsList">
             View all
           </a>
         </div>
@@ -532,10 +567,10 @@ const DashboardScreen = () => {
                     },
                     xaxis: {
                       categories: [
-                        `Staff ${peoplesCount?.staffCount}`,
-                        `Coach ${peoplesCount?.coachCount}`,
-                        `Player ${peoplesCount?.playersCount}`,
-                        `Fan ${peoplesCount?.fanCount}`,
+                        `Staff ${userMatricsCount?.staffCount}`,
+                        `Coach ${userMatricsCount?.coachCount}`,
+                        `Player ${userMatricsCount?.playersCount}`,
+                        `Fan ${userMatricsCount?.fanCount}`,
                       ],
                       labels: {
                         style: {
@@ -548,10 +583,10 @@ const DashboardScreen = () => {
                   series={[
                     {
                       data: [
-                        peoplesCount?.staffCount,
-                        peoplesCount?.coachCount,
-                        peoplesCount?.playersCount,
-                        peoplesCount?.fanCount,
+                        userMatricsCount?.staffCount,
+                        userMatricsCount?.coachCount,
+                        userMatricsCount?.playersCount,
+                        userMatricsCount?.fanCount,
                       ],
                     },
                   ]}
@@ -597,36 +632,96 @@ const DashboardScreen = () => {
                   </div>
                 </div>
               </div>
-              <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
-                <span style={{ fontSize: FONT_SIZE.S }}>Staffs</span>
-                <span style={{ fontSize: FONT_SIZE.S }}>
+              <div className="d-flex m-3 px-3 py-2 bg-light">
+                <Icon icon="bi:file-person-fill" width={20} height={20} />
+                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                  Staffs
+                </span>
+                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
                   {eventsType === "all"
-                    ? peoplesCount?.staffCount
-                    : peoplesCount?.inivitedStaffCount}
+                    ? userMatricsCount?.staffCount
+                    : userMatricsCount?.inivitedStaffCount}
                 </span>
               </div>
               <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
-                <span style={{ fontSize: FONT_SIZE.S }}>Coaches</span>
-                <span style={{ fontSize: FONT_SIZE.S }}>
+                <Icon icon="mdi:people-group" width={20} height={20} />
+                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                  Coaches
+                </span>
+                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
                   {eventsType === "all"
-                    ? peoplesCount?.coachCount
-                    : peoplesCount?.inivitedCoachCount}
+                    ? userMatricsCount?.coachCount
+                    : userMatricsCount?.inivitedCoachCount}
                 </span>
               </div>
               <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
-                <span style={{ fontSize: FONT_SIZE.S }}>Players</span>
-                <span style={{ fontSize: FONT_SIZE.S }}>
+                <Icon icon="mdi:baseball-bat" width={20} height={20} />
+                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                  Players
+                </span>
+                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
                   {eventsType === "all"
-                    ? peoplesCount?.playersCount
-                    : peoplesCount?.inivitedPlayersCount}
+                    ? userMatricsCount?.playersCount
+                    : userMatricsCount?.inivitedPlayersCount}
                 </span>
               </div>
               <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
-                <span style={{ fontSize: FONT_SIZE.S }}>Fans</span>
-                <span style={{ fontSize: FONT_SIZE.S }}>
+                <Icon icon="f7:person-2-fill" width={20} height={20} />
+                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                  Fans
+                </span>
+                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
                   {eventsType === "all"
-                    ? peoplesCount?.fanCount
-                    : peoplesCount?.inivitedFanCount}
+                    ? userMatricsCount?.fanCount
+                    : userMatricsCount?.inivitedFanCount}
+                </span>
+              </div>
+            </div>
+            <div className="border mt-4 rounded-1">
+              <div className="border-bottom">
+                <div className="d-flex justify-content-between">
+                  <h6
+                    className="p-3"
+                    style={{ fontWeight: "bold", marginBottom: 0 }}
+                  >
+                    Role Matrics
+                  </h6>
+                </div>
+              </div>
+              <div className="d-flex m-3 px-3 py-2 bg-light">
+                <Icon icon="typcn:video" width="20" height="20" />
+                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                  Video Streamer
+                </span>
+                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                  {roleMatricsCount?.videoStreamCount}
+                </span>
+              </div>
+              <div className="d-flex m-3 px-3 py-2 bg-light">
+                <Icon icon="clarity:computer-solid" width="20" height="20" />
+                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                  Scorer
+                </span>
+                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                  {roleMatricsCount?.scorerCount}
+                </span>
+              </div>
+              <div className="d-flex m-3 px-3 py-2 bg-light">
+                <Icon icon="mdi:baseball-bat" width={20} height={20} />
+                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                  PC Keeper
+                </span>
+                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                  {roleMatricsCount?.pcKeeperCount}
+                </span>
+              </div>
+              <div className="d-flex m-3 px-3 py-2 bg-light">
+                <Icon icon="mdi:person" width="20" height="20" />
+                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                  Keeper
+                </span>
+                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                  {roleMatricsCount?.keeperCount}
                 </span>
               </div>
             </div>

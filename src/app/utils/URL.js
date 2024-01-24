@@ -15,6 +15,7 @@ export const DASHBOARD_EVENTS_TABS = "v1/user/admin/events-tabs";
 export const DASHBOARD_USER_MATRICS = "v1/user/admin/user-matrics";
 export const DASHBOARD_EVENT_MATRICS = "v1/user/admin/events-matrics";
 export const DASHBOARD_TEAM_MATRICS = "v1/user/admin/team-matrics";
+export const DASHBOARD_ROLE_MATRICS = "v1/user/admin/role-matrics";
 
 //Settings
 export const GET_EVENT_SETTINGS = "v1/user/admin/eventcreation-settings";

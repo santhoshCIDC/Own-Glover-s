@@ -27,6 +27,7 @@ export const store = configureStore({
     dashboardUserMatricsWithParamsState: dashboardReducer,
     dashboardEventMatricsState: dashboardReducer,
     dashboardTeamMatricsState: dashboardReducer,
+    dashboardRoleMatricsState: dashboardReducer,
     settingsDetailsState: settingsDetailsReducer,
     teamsListState: teamsListReducer,
     usersListState: usersListReducer,

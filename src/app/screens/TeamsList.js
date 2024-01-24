@@ -88,12 +88,18 @@ const TeamsList = () => {
                     }}
                     CloseBtnOnClick={() => setIsSearch("")}
                   />
-                  <button
+                 <button
                     type="button"
-                    className="btn btn-primary d-flex align-items-center ms-5 me-xl-5 me-0"
-                    style={{ fontSize: FONT_SIZE.S, minWidth: "fit-content" }}
+                    className="btn btn-primary d-flex align-items-center ms-4 me-xl-5 me-0"
+                    style={{
+                      fontSize: FONT_SIZE.S,
+                      minWidth: "fit-content",
+                      backgroundColor: "#3796f3",
+                      borderColor: "#3796f3",
+                    }}
                   >
                     <Icon
+                      className="me-2"
                       icon="ion:document-text-outline"
                       color="white"
                       width="16"

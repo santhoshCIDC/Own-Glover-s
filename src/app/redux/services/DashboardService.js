@@ -3,6 +3,7 @@ import HttpsClient from "../../utils/HttpsClient";
 import {
   DASHBOARD_EVENTS_TABS,
   DASHBOARD_EVENT_MATRICS,
+  DASHBOARD_ROLE_MATRICS,
   DASHBOARD_TEAM_MATRICS,
   DASHBOARD_USER_MATRICS,
 } from "../../utils/URL";
@@ -42,6 +43,12 @@ export const dashboardService = createApi({
         method: "GET",
       }),
     }),
+    getRoleMatrics: builder.query({
+      query: () => ({
+        url: DASHBOARD_ROLE_MATRICS,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -51,4 +58,5 @@ export const {
   useLazyGetEventMatricsQuery,
   useLazyGetTeamMatricsQuery,
   useLazyGetUserMatricsWithParamsQuery,
+  useLazyGetRoleMatricsQuery,
 } = dashboardService;

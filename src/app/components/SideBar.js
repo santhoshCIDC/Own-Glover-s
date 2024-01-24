@@ -13,7 +13,7 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
   const [isClicked, setIsClicked] = useState("");
 
   return (
-    <div className="d-flex" style={{height: "100vh"}}>
+    <div className="d-flex" style={{ height: "100vh", paddingLeft: "5%" }}>
       <Navbar expand="sm" className="align-items-start">
         <Container className="d-flex flex-column p-0">
           <div className="d-flex">
@@ -22,10 +22,7 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
           </div>
-          <Navbar.Collapse
-            className="col-sm-11 d-flex "
-            id="basic-navbar-nav"
-          >
+          <Navbar.Collapse className="col-sm-11 d-flex " id="basic-navbar-nav">
             <Nav className="d-flex flex-column list_container">
               <span
                 className="d-none d-sm-inline mb-3"
@@ -68,7 +65,8 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title2"
+                  isClicked === "title2" ||
+                  window.location.pathname === "/userList"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
                 }
@@ -100,7 +98,8 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title3"
+                  isClicked === "title3" ||
+                  window.location.pathname === "/teamsList"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
                 }
@@ -132,7 +131,8 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title4"
+                  isClicked === "title4" ||
+                  window.location.pathname === "/eventsList"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
                 }
@@ -164,7 +164,8 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title5"
+                  isClicked === "title5" ||
+                  window.location.pathname === "/seasons"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
                 }
@@ -196,7 +197,8 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title6"
+                  isClicked === "title6" ||
+                  window.location.pathname === "/settings"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
                 }
