@@ -10,9 +10,9 @@ import UserListScreen from "../screens/UserListScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import SeasonsScreen from "../screens/SeasonsScreen";
 import ChangePassword from "../screens/ChangePassword";
-import EventsList from "../screens/EventsList/EventsList";
+import EventsList from "../screens/EventsList";
 import TeamsList from "../screens/TeamsList";
-import EditProfileScreen from "../screens/Profile/EditProfileScreen";
+import EditProfileScreen from "../screens/EditProfileScreen";
 import ForgotPassword from "../screens/ForgotPassword";
 
 const MainRoutes = () => {

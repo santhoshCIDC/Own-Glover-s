@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../components/Header";
-import { COLOR, FONT_SIZE } from "../../utils/constants";
-import InputContainer from "../../components/InputContainer";
+import Header from "../components/Header";
+import { COLOR, FONT_SIZE } from "../utils/constants";
+import InputContainer from "../components/InputContainer";
 import { useNavigate } from "react-router-dom";
-import Utility, { ToastMessage } from "../../utils/Utility";
+import Utility, { ToastMessage } from "../utils/Utility";
 import { useDispatch, useSelector } from "react-redux";
-import CircleLoading from "../../components/CircleLoading";
-import { useEditProfileMutation } from "../../redux/services/AuthService";
-import { editProfileDispatch } from "../../redux/slices/AuthSlice";
+import CircleLoading from "../components/CircleLoading";
+import { useEditProfileMutation } from "../redux/services/AuthService";
+import { editProfileDispatch } from "../redux/slices/AuthSlice";
 
 const EditProfileScreen = () => {
   const navigate = useNavigate();

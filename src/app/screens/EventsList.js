@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../components/Header";
-import SearchBar from "../../components/SearchBar";
+import Header from "../components/Header";
+import SearchBar from "../components/SearchBar";
 import { Icon } from "@iconify/react";
-import { useLazyGetEventsListQuery } from "../../redux/services/TeamsListService";
+import { useLazyGetEventsListQuery } from "../redux/services/TeamsListService";
 import { useDispatch, useSelector } from "react-redux";
-import { getEventsListDispatch } from "../../redux/slices/TeamsListSlice";
-import CircleLoading from "../../components/CircleLoading";
-import { FONT_SIZE } from "../../utils/constants";
+import { getEventsListDispatch } from "../redux/slices/TeamsListSlice";
+import CircleLoading from "../components/CircleLoading";
+import { FONT_SIZE } from "../utils/constants";
 import { Dropdown, IconButton, Popover, Whisper } from "rsuite";
 import FileDownloadIcon from "@rsuite/icons/FileDownload";
 import PageIcon from "@rsuite/icons/Page";
 import { CSVLink } from "react-csv";
-import Pagination from "../../components/Pagination";
+import Pagination from "../components/Pagination";
 const EventsList = () => {
   const itemsPerPage = 10;
   const EventsTab = [
