@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
   const navigate = useNavigate();
   const [isHoveringDashboard, setIsHoveringDashboard] = useState("");
-  const [isClicked, setIsClicked] = useState("");
 
   return (
     <div className="d-flex" style={{ height: "100vh", paddingLeft: "5%" }}>
@@ -32,7 +31,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </span>
               <Nav.Link
                 className={
-                  isClicked === "title1" ||
                   window.location.pathname === "/dashboard"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
@@ -44,7 +42,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
                   setIsHoveringDashboard("");
                 }}
                 onClick={() => {
-                  setIsClicked("title1");
                   navigate("/dashboard");
                 }}
               >
@@ -65,7 +62,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title2" ||
                   window.location.pathname === "/userList"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
@@ -77,7 +73,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
                   setIsHoveringDashboard("");
                 }}
                 onClick={() => {
-                  setIsClicked("title2");
                   navigate("/userList");
                 }}
               >
@@ -98,7 +93,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title3" ||
                   window.location.pathname === "/teamsList"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
@@ -110,7 +104,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
                   setIsHoveringDashboard("");
                 }}
                 onClick={() => {
-                  setIsClicked("title3");
                   navigate("/teamsList");
                 }}
               >
@@ -131,7 +124,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title4" ||
                   window.location.pathname === "/eventsList"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
@@ -143,7 +135,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
                   setIsHoveringDashboard("");
                 }}
                 onClick={() => {
-                  setIsClicked("title4");
                   navigate("/eventsList");
                 }}
               >
@@ -164,7 +155,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title5" ||
                   window.location.pathname === "/seasons"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
@@ -176,7 +166,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
                   setIsHoveringDashboard("");
                 }}
                 onClick={() => {
-                  setIsClicked("title5");
                   navigate("/seasons");
                 }}
               >
@@ -197,7 +186,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
               </Nav.Link>
               <Nav.Link
                 className={
-                  isClicked === "title6" ||
                   window.location.pathname === "/settings"
                     ? "d-flex tabClicked align-items-center mb-3"
                     : "d-flex align-items-center mb-3"
@@ -209,7 +197,6 @@ const SideBar = ({ title1, title2, title3, title4, title5, title6 }) => {
                   setIsHoveringDashboard("");
                 }}
                 onClick={() => {
-                  setIsClicked("title6");
                   navigate("/settings");
                 }}
               >
