@@ -21,6 +21,9 @@ const initialState = {
   dashboardRoleMatrics: !localStorage.getItem("dashboardRoleMatrics")
     ? localStorage.getItem("dashboardRoleMatrics")
     : null,
+  globalSearch: !localStorage.getItem("globalSearch")
+    ? localStorage.getItem("globalSearch")
+    : null,
 };
 
 export const dashboardSlice = createSlice({
@@ -69,6 +72,10 @@ export const dashboardSlice = createSlice({
       );
       state.dashboardRoleMatrics = action.payload;
     },
+    globalSearchDispatch: (state, action) => {
+      localStorage.setItem("globalSearch", JSON.stringify(action.payload));
+      state.globalSearch = action.payload;
+    },
   },
 });
 
@@ -81,4 +88,5 @@ export const {
   getDashboardTeamMatricsDispatch,
   getDashboardUserMatricsWithParamsDispatch,
   getDashboardRoleMatricsDispatch,
+  globalSearchDispatch,
 } = dashboardSlice.actions;

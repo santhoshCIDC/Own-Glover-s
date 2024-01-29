@@ -6,6 +6,7 @@ import {
   DASHBOARD_ROLE_MATRICS,
   DASHBOARD_TEAM_MATRICS,
   DASHBOARD_USER_MATRICS,
+  GLOBAL_SEARCH,
 } from "../../utils/URL";
 
 export const dashboardService = createApi({
@@ -49,6 +50,13 @@ export const dashboardService = createApi({
         method: "GET",
       }),
     }),
+    globalSearch: builder.mutation({
+      query: (body) => ({
+        url: GLOBAL_SEARCH,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -59,4 +67,5 @@ export const {
   useLazyGetTeamMatricsQuery,
   useLazyGetUserMatricsWithParamsQuery,
   useLazyGetRoleMatricsQuery,
+  useGlobalSearchMutation,
 } = dashboardService;

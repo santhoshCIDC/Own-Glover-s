@@ -21,6 +21,7 @@ import {
   getDashboardUserMatricsWithParamsDispatch,
 } from "../redux/slices/DashboardSlice";
 import CircleLoading from "../components/CircleLoading";
+import GlobalSearch from "../components/GlobalSearch";
 
 const DashboardScreen = () => {
   const EventsTab = [
@@ -238,9 +239,11 @@ const DashboardScreen = () => {
       ((eventLength?.recentEventsLength * 100) / eventsTotalCount).toFixed(0)
     );
     setScheduledCount(
-      ((eventLength?.liveEventLength + eventLength?.upcomingEventsLength) *
-        100) /
-        eventsTotalCount.toFixed(0)
+      (
+        ((eventLength?.liveEventLength + eventLength?.upcomingEventsLength) *
+          100) /
+        eventsTotalCount
+      ).toFixed(0)
     );
   }, [
     eventLength?.liveEventLength,
@@ -263,6 +266,11 @@ const DashboardScreen = () => {
         }}
         CloseBtnOnClick={() => setIsSearch("")}
       />
+      {isSearch && (
+        <div>
+          <GlobalSearch isSearch={isSearch} />
+        </div>
+      )}
       <div className="container-fluid py-3 border-top border-bottom">
         <div className="row">
           <div className="col">
@@ -270,464 +278,491 @@ const DashboardScreen = () => {
           </div>
         </div>
       </div>
-      <div className="d-flex flex-row justify-content-between ms-4 me-5 my-3 border-bottom">
-        <h6 className="mb-0 fw-bold">Events</h6>
-        <div className="d-flex">
-          <Icon
-            icon="icon-park-outline:dot"
-            color="red"
-            width="20"
-            height="20"
-          />
-          <p style={{ fontSize: FONT_SIZE.XS }}>Live:</p>
-          <a className="ms-2" style={{ fontSize: FONT_SIZE.XS }} href="/eventsList">
-            View all
-          </a>
+      <div style={{overflow:"auto"}}>
+        <div className="d-flex flex-row justify-content-between ms-4 me-5 my-3 border-bottom">
+          <h6 className="mb-0 fw-bold">Events</h6>
+          <div className="d-flex">
+            <Icon
+              icon="icon-park-outline:dot"
+              color="red"
+              width="20"
+              height="20"
+            />
+            <p style={{ fontSize: FONT_SIZE.XS }}>Live:</p>
+            {eventsTabList?.live.length === 1 && (
+              <a
+                className="ms-2"
+                style={{ fontSize: FONT_SIZE.XS, textDecorationLine: "none" }}
+                href="/eventsList"
+              >
+                {eventsTabList?.live[0]?.playing_team} vs{" "}
+                {eventsTabList?.live[0]?.opponent_team}
+              </a>
+            )}
+            <a
+              className="ms-2"
+              style={{ fontSize: FONT_SIZE.XS, textDecorationLine: "none" }}
+              href="/eventsList"
+            >
+              View all
+            </a>
+          </div>
         </div>
-      </div>
-      {isLoading ? (
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ position: "absolute", left: "50%", top: "50%" }}
-        >
-          <CircleLoading />
-        </div>
-      ) : (
-        <div className="row mx-3">
-          <div className="col-sm-3 col-md-6 col-lg-3">
-            <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style1 align-items-center">
-              <div>
-                <h1>{eventLength?.todayEventCount}</h1>
-                <h5 style={{ fontSize: 17.5 }}>Today</h5>
-              </div>
-              <Icon
-                icon="material-symbols:date-range-rounded"
-                color="white"
-                width="40"
-                height="40"
-              />
-            </div>
+        {isLoading ? (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ position: "absolute", left: "50%", top: "50%" }}
+          >
+            <CircleLoading />
           </div>
-          <div className="col-sm-3 col-md-6 col-lg-3 my-md-0 my-2">
-            <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style2 align-items-center">
-              <div>
-                <h1>{eventLength?.tomorrowEventCount}</h1>
-                <h5 style={{ fontSize: 17.5 }}>Tomorrow</h5>
-              </div>
-              <Icon
-                icon="material-symbols:date-range-rounded"
-                color="white"
-                width="40"
-                height="40"
-                style={{ minWidth: 25, minHeight: 25 }}
-              />
-            </div>
-          </div>
-
-          <div className="col-sm-3 col-md-6 col-lg-3 my-lg-0 my-2">
-            <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style3 align-items-center">
-              <div>
-                <h1>{`${completedCount}%`}</h1>
-                <h5 style={{ fontSize: 17.5 }}>Completed</h5>
-              </div>
-              <Icon icon="charm:tick" color="white" width="40" height="40" />
-            </div>
-          </div>
-          <div className="col-sm-3 col-md-6 col-lg-3 my-lg-0 my-2">
-            <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style4 align-items-center">
-              <div>
-                <h1>{`${scheduledCount}%`}</h1>
-                <h5 style={{ fontSize: 17.5 }}>Scheduled</h5>
-              </div>
-              <Icon icon="gg:sand-clock" color="white" width="40" height="40" />
-            </div>
-          </div>
-          <div className="col-sm-6 my-3">
-            <div className="border rounded-1">
-              <div className="border-bottom">
-                <h6
-                  className="p-3"
-                  style={{ fontWeight: "bold", marginBottom: 0 }}
-                >
-                  Events Graph
-                </h6>
-              </div>
-              <div id="chart">
-                <ReactApexChart
-                  options={{
-                    chart: {
-                      height: 350,
-                      type: "bar",
-                      events: {
-                        click: function (chart, w, e) {
-                          // console.log(chart, w, e)
-                        },
-                      },
-                    },
-                    colors: eventsTabColors,
-                    plotOptions: {
-                      bar: {
-                        columnWidth: "50%",
-                        distributed: true,
-                      },
-                    },
-                    dataLabels: {
-                      enabled: false,
-                    },
-                    legend: {
-                      show: false,
-                    },
-                    xaxis: {
-                      categories: [
-                        `Live ${eventLength?.liveEventLength}`,
-                        `Recent ${eventLength?.recentEventsLength}`,
-                        `Upcoming ${eventLength?.upcomingEventsLength}`,
-                      ],
-                      labels: {
-                        style: {
-                          colors: eventsTabColors,
-                          fontSize: "12px",
-                        },
-                      },
-                    },
-                  }}
-                  series={[
-                    {
-                      data: [
-                        eventLength?.liveEventLength,
-                        eventLength?.recentEventsLength,
-                        eventLength?.upcomingEventsLength,
-                      ],
-                    },
-                  ]}
-                  type="bar"
-                  height={350}
+        ) : (
+          <div className="row mx-3">
+            <div className="col-sm-3 col-md-6 col-lg-3">
+              <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style1 align-items-center">
+                <div>
+                  <h1>{eventLength?.todayEventCount}</h1>
+                  <h5 style={{ fontSize: 17.5 }}>Today</h5>
+                </div>
+                <Icon
+                  icon="material-symbols:date-range-rounded"
+                  color="white"
+                  width="40"
+                  height="40"
                 />
               </div>
             </div>
-            <div className="border mt-4 rounded-1">
-              <div className="border-bottom">
-                <div className="d-flex justify-content-between">
+            <div className="col-sm-3 col-md-6 col-lg-3 my-md-0 my-2">
+              <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style2 align-items-center">
+                <div>
+                  <h1>{eventLength?.tomorrowEventCount}</h1>
+                  <h5 style={{ fontSize: 17.5 }}>Tomorrow</h5>
+                </div>
+                <Icon
+                  icon="material-symbols:date-range-rounded"
+                  color="white"
+                  width="40"
+                  height="40"
+                  style={{ minWidth: 25, minHeight: 25 }}
+                />
+              </div>
+            </div>
+
+            <div className="col-sm-3 col-md-6 col-lg-3 my-lg-0 my-2">
+              <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style3 align-items-center">
+                <div>
+                  <h1>{`${completedCount}%`}</h1>
+                  <h5 style={{ fontSize: 17.5 }}>Completed</h5>
+                </div>
+                <Icon icon="charm:tick" color="white" width="40" height="40" />
+              </div>
+            </div>
+            <div className="col-sm-3 col-md-6 col-lg-3 my-lg-0 my-2">
+              <div className="bg-primary text-white rounded p-3 d-flex justify-content-between card_style4 align-items-center">
+                <div>
+                  <h1>{`${scheduledCount}%`}</h1>
+                  <h5 style={{ fontSize: 17.5 }}>Scheduled</h5>
+                </div>
+                <Icon
+                  icon="gg:sand-clock"
+                  color="white"
+                  width="40"
+                  height="40"
+                />
+              </div>
+            </div>
+            <div className="col-sm-6 my-3">
+              <div className="border rounded-1">
+                <div className="border-bottom">
                   <h6
                     className="p-3"
                     style={{ fontWeight: "bold", marginBottom: 0 }}
                   >
-                    Team Matrics
+                    Events Graph
                   </h6>
-                  <div className="d-flex">
-                    <h6
-                      className="pt-3 pb-3 pe-2"
-                      style={{ fontWeight: "bold", marginBottom: 0 }}
-                    >
-                      Total Team:
-                    </h6>
-                    <h6
-                      className="pt-3 pb-3 pe-3"
-                      style={{ fontWeight: "bold", marginBottom: 0 }}
-                    >
-                      {teamMatrics
-                        ? teamMatrics?.Elementary +
-                          teamMatrics?.["Middle schools"] +
-                          teamMatrics?.["High schools"] +
-                          teamMatrics?.Schools +
-                          teamMatrics?.["Local Leagues"] +
-                          teamMatrics?.Travel
-                        : 0}
-                    </h6>
-                  </div>
+                </div>
+                <div id="chart">
+                  <ReactApexChart
+                    options={{
+                      chart: {
+                        height: 350,
+                        type: "bar",
+                        events: {
+                          click: function (chart, w, e) {
+                            // console.log(chart, w, e)
+                          },
+                        },
+                      },
+                      colors: eventsTabColors,
+                      plotOptions: {
+                        bar: {
+                          columnWidth: "50%",
+                          distributed: true,
+                        },
+                      },
+                      dataLabels: {
+                        enabled: false,
+                      },
+                      legend: {
+                        show: false,
+                      },
+                      xaxis: {
+                        categories: [
+                          `Live ${eventLength?.liveEventLength}`,
+                          `Recent ${eventLength?.recentEventsLength}`,
+                          `Upcoming ${eventLength?.upcomingEventsLength}`,
+                        ],
+                        labels: {
+                          style: {
+                            colors: eventsTabColors,
+                            fontSize: "12px",
+                          },
+                        },
+                      },
+                    }}
+                    series={[
+                      {
+                        data: [
+                          eventLength?.liveEventLength,
+                          eventLength?.recentEventsLength,
+                          eventLength?.upcomingEventsLength,
+                        ],
+                      },
+                    ]}
+                    type="bar"
+                    height={350}
+                  />
                 </div>
               </div>
-              <div class="table-responsive p-4">
-                <table className={"table"}>
-                  <tr>
-                    <th
-                      className={"bg-light border-top border-bottom py-2 ps-2"}
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
+              <div className="border mt-4 rounded-1">
+                <div className="border-bottom">
+                  <div className="d-flex justify-content-between">
+                    <h6
+                      className="p-3"
+                      style={{ fontWeight: "bold", marginBottom: 0 }}
                     >
-                      Type
-                    </th>
-                    <th
-                      className={"bg-light border-top border-bottom py-2 ps-2"}
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
-                    >
-                      No. of teams
-                    </th>
-                  </tr>
-                  <tbody>
-                    <tr
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
-                    >
-                      <td>{"Local League"}</td>
-                      <td>
-                        {teamMatrics ? teamMatrics?.["Local Leagues"] : 0}
-                      </td>
-                    </tr>
-                    <tr
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
-                    >
-                      <td>{"Travel"}</td>
-                      <td>{teamMatrics ? teamMatrics?.Travel : 0}</td>
-                    </tr>
-                    <tr
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
-                    >
-                      <td>{"Schools"}</td>
-                      <td>
+                      Team Matrics
+                    </h6>
+                    <div className="d-flex">
+                      <h6
+                        className="pt-3 pb-3 pe-2"
+                        style={{ fontWeight: "bold", marginBottom: 0 }}
+                      >
+                        Total Team:
+                      </h6>
+                      <h6
+                        className="pt-3 pb-3 pe-3"
+                        style={{ fontWeight: "bold", marginBottom: 0 }}
+                      >
                         {teamMatrics
                           ? teamMatrics?.Elementary +
                             teamMatrics?.["Middle schools"] +
                             teamMatrics?.["High schools"] +
-                            teamMatrics?.Schools
+                            teamMatrics?.Schools +
+                            teamMatrics?.["Local Leagues"] +
+                            teamMatrics?.Travel
                           : 0}
-                      </td>
-                    </tr>
-                    <tr
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
-                    >
-                      <td className="ps-5">{"- Elementary"}</td>
-                      <td>{teamMatrics ? teamMatrics?.Elementary : 0}</td>
-                    </tr>
-                    <tr
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
-                    >
-                      <td className="ps-5">{"- Middle Schools"}</td>
-                      <td>
-                        {teamMatrics ? teamMatrics?.["Middle schools"] : 0}
-                      </td>
-                    </tr>
-                    <tr
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
-                    >
-                      <td className="ps-5">{"- High School"}</td>
-                      <td>{teamMatrics ? teamMatrics?.["High schools"] : 0}</td>
-                    </tr>
-                    <tr
-                      style={{
-                        fontSize: FONT_SIZE.S,
-                      }}
-                    >
-                      <td className="ps-5">{"- College"}</td>
-                      <td>{teamMatrics ? teamMatrics?.Schools : 0}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div className="col-sm-6 my-3">
-            <div className="border rounded-1">
-              <div className="border-bottom">
-                <h6
-                  className="p-3"
-                  style={{ fontWeight: "bold", marginBottom: 0 }}
-                >
-                  Users Graph
-                </h6>
-              </div>
-              <div id="chart">
-                <ReactApexChart
-                  options={{
-                    chart: {
-                      height: 350,
-                      type: "bar",
-                      events: {
-                        click: function (chart, w, e) {
-                          // console.log(chart, w, e)
-                        },
-                      },
-                    },
-                    colors: userMatricsColors,
-                    plotOptions: {
-                      bar: {
-                        columnWidth: "50%",
-                        distributed: true,
-                      },
-                    },
-                    dataLabels: {
-                      enabled: false,
-                    },
-                    legend: {
-                      show: false,
-                    },
-                    xaxis: {
-                      categories: [
-                        `Staff ${userMatricsCount?.staffCount}`,
-                        `Coach ${userMatricsCount?.coachCount}`,
-                        `Player ${userMatricsCount?.playersCount}`,
-                        `Fan ${userMatricsCount?.fanCount}`,
-                      ],
-                      labels: {
-                        style: {
-                          colors: userMatricsColors,
-                          fontSize: "12px",
-                        },
-                      },
-                    },
-                  }}
-                  series={[
-                    {
-                      data: [
-                        userMatricsCount?.staffCount,
-                        userMatricsCount?.coachCount,
-                        userMatricsCount?.playersCount,
-                        userMatricsCount?.fanCount,
-                      ],
-                    },
-                  ]}
-                  type="bar"
-                  height={350}
-                />
-              </div>
-            </div>
-            <div className="border mt-4 rounded-1">
-              <div className="border-bottom">
-                <div className="d-flex justify-content-between">
-                  <h6
-                    className="p-3"
-                    style={{ fontWeight: "bold", marginBottom: 0 }}
-                  >
-                    User Matrics
-                  </h6>
-                  <div className="d-flex align-items-center pe-2">
-                    {EventsTab.map((item, index) => (
-                      <button
-                        key={item.id}
-                        className={`btn ${
-                          eventsType === item.type ? "active-tab" : ""
-                        }`}
-                        style={{
-                          border: "none",
-                          cursor:
-                            eventsType === item.type ? "default" : "pointer",
-                        }}
-                        onClick={() => setEventsType(item.type)}
-                      >
-                        <h6
-                          className={`text-nowrap mb-0 ${
-                            eventsType === item.type
-                              ? "active-text-tab"
-                              : "deActive-text-tab"
-                          }`}
-                        >
-                          {item.title}
-                        </h6>
-                      </button>
-                    ))}
+                      </h6>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="d-flex m-3 px-3 py-2 bg-light">
-                <Icon icon="bi:file-person-fill" width={20} height={20} />
-                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
-                  Staffs
-                </span>
-                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
-                  {eventsType === "all"
-                    ? userMatricsCount?.staffCount
-                    : userMatricsCount?.inivitedStaffCount}
-                </span>
-              </div>
-              <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
-                <Icon icon="mdi:people-group" width={20} height={20} />
-                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
-                  Coaches
-                </span>
-                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
-                  {eventsType === "all"
-                    ? userMatricsCount?.coachCount
-                    : userMatricsCount?.inivitedCoachCount}
-                </span>
-              </div>
-              <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
-                <Icon icon="mdi:baseball-bat" width={20} height={20} />
-                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
-                  Players
-                </span>
-                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
-                  {eventsType === "all"
-                    ? userMatricsCount?.playersCount
-                    : userMatricsCount?.inivitedPlayersCount}
-                </span>
-              </div>
-              <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
-                <Icon icon="f7:person-2-fill" width={20} height={20} />
-                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
-                  Fans
-                </span>
-                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
-                  {eventsType === "all"
-                    ? userMatricsCount?.fanCount
-                    : userMatricsCount?.inivitedFanCount}
-                </span>
+                <div class="table-responsive p-4">
+                  <table className={"table"}>
+                    <tr>
+                      <th
+                        className={
+                          "bg-light border-top border-bottom py-2 ps-2"
+                        }
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        Type
+                      </th>
+                      <th
+                        className={
+                          "bg-light border-top border-bottom py-2 ps-2"
+                        }
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        No. of teams
+                      </th>
+                    </tr>
+                    <tbody>
+                      <tr
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        <td>{"Local League"}</td>
+                        <td>
+                          {teamMatrics ? teamMatrics?.["Local Leagues"] : 0}
+                        </td>
+                      </tr>
+                      <tr
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        <td>{"Travel"}</td>
+                        <td>{teamMatrics ? teamMatrics?.Travel : 0}</td>
+                      </tr>
+                      <tr
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        <td>{"Schools"}</td>
+                        <td>
+                          {teamMatrics
+                            ? teamMatrics?.Elementary +
+                              teamMatrics?.["Middle schools"] +
+                              teamMatrics?.["High schools"] +
+                              teamMatrics?.Schools
+                            : 0}
+                        </td>
+                      </tr>
+                      <tr
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        <td className="ps-5">{"- Elementary"}</td>
+                        <td>{teamMatrics ? teamMatrics?.Elementary : 0}</td>
+                      </tr>
+                      <tr
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        <td className="ps-5">{"- Middle Schools"}</td>
+                        <td>
+                          {teamMatrics ? teamMatrics?.["Middle schools"] : 0}
+                        </td>
+                      </tr>
+                      <tr
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        <td className="ps-5">{"- High School"}</td>
+                        <td>
+                          {teamMatrics ? teamMatrics?.["High schools"] : 0}
+                        </td>
+                      </tr>
+                      <tr
+                        style={{
+                          fontSize: FONT_SIZE.S,
+                        }}
+                      >
+                        <td className="ps-5">{"- College"}</td>
+                        <td>{teamMatrics ? teamMatrics?.Schools : 0}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-            <div className="border mt-4 rounded-1">
-              <div className="border-bottom">
-                <div className="d-flex justify-content-between">
+            <div className="col-sm-6 my-3">
+              <div className="border rounded-1">
+                <div className="border-bottom">
                   <h6
                     className="p-3"
                     style={{ fontWeight: "bold", marginBottom: 0 }}
                   >
-                    Role Matrics
+                    Users Graph
                   </h6>
                 </div>
+                <div id="chart">
+                  <ReactApexChart
+                    options={{
+                      chart: {
+                        height: 350,
+                        type: "bar",
+                        events: {
+                          click: function (chart, w, e) {
+                            // console.log(chart, w, e)
+                          },
+                        },
+                      },
+                      colors: userMatricsColors,
+                      plotOptions: {
+                        bar: {
+                          columnWidth: "50%",
+                          distributed: true,
+                        },
+                      },
+                      dataLabels: {
+                        enabled: false,
+                      },
+                      legend: {
+                        show: false,
+                      },
+                      xaxis: {
+                        categories: [
+                          `Staff ${userMatricsCount?.staffCount}`,
+                          `Coach ${userMatricsCount?.coachCount}`,
+                          `Player ${userMatricsCount?.playersCount}`,
+                          `Fan ${userMatricsCount?.fanCount}`,
+                        ],
+                        labels: {
+                          style: {
+                            colors: userMatricsColors,
+                            fontSize: "12px",
+                          },
+                        },
+                      },
+                    }}
+                    series={[
+                      {
+                        data: [
+                          userMatricsCount?.staffCount,
+                          userMatricsCount?.coachCount,
+                          userMatricsCount?.playersCount,
+                          userMatricsCount?.fanCount,
+                        ],
+                      },
+                    ]}
+                    type="bar"
+                    height={350}
+                  />
+                </div>
               </div>
-              <div className="d-flex m-3 px-3 py-2 bg-light">
-                <Icon icon="typcn:video" width="20" height="20" />
-                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
-                  Video Streamer
-                </span>
-                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
-                  {roleMatricsCount?.videoStreamCount}
-                </span>
+              <div className="border mt-4 rounded-1">
+                <div className="border-bottom">
+                  <div className="d-flex justify-content-between">
+                    <h6
+                      className="p-3"
+                      style={{ fontWeight: "bold", marginBottom: 0 }}
+                    >
+                      User Matrics
+                    </h6>
+                    <div className="d-flex align-items-center pe-2">
+                      {EventsTab.map((item, index) => (
+                        <button
+                          key={item.id}
+                          className={`btn ${
+                            eventsType === item.type ? "active-tab" : ""
+                          }`}
+                          style={{
+                            border: "none",
+                            cursor:
+                              eventsType === item.type ? "default" : "pointer",
+                          }}
+                          onClick={() => setEventsType(item.type)}
+                        >
+                          <h6
+                            className={`text-nowrap mb-0 ${
+                              eventsType === item.type
+                                ? "active-text-tab"
+                                : "deActive-text-tab"
+                            }`}
+                          >
+                            {item.title}
+                          </h6>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="d-flex m-3 px-3 py-2 bg-light">
+                  <Icon icon="bi:file-person-fill" width={20} height={20} />
+                  <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                    Staffs
+                  </span>
+                  <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                    {eventsType === "all"
+                      ? userMatricsCount?.staffCount
+                      : userMatricsCount?.inivitedStaffCount}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
+                  <Icon icon="mdi:people-group" width={20} height={20} />
+                  <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                    Coaches
+                  </span>
+                  <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                    {eventsType === "all"
+                      ? userMatricsCount?.coachCount
+                      : userMatricsCount?.inivitedCoachCount}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
+                  <Icon icon="mdi:baseball-bat" width={20} height={20} />
+                  <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                    Players
+                  </span>
+                  <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                    {eventsType === "all"
+                      ? userMatricsCount?.playersCount
+                      : userMatricsCount?.inivitedPlayersCount}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-between m-3 px-3 py-2 bg-light">
+                  <Icon icon="f7:person-2-fill" width={20} height={20} />
+                  <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                    Fans
+                  </span>
+                  <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                    {eventsType === "all"
+                      ? userMatricsCount?.fanCount
+                      : userMatricsCount?.inivitedFanCount}
+                  </span>
+                </div>
               </div>
-              <div className="d-flex m-3 px-3 py-2 bg-light">
-                <Icon icon="clarity:computer-solid" width="20" height="20" />
-                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
-                  Scorer
-                </span>
-                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
-                  {roleMatricsCount?.scorerCount}
-                </span>
-              </div>
-              <div className="d-flex m-3 px-3 py-2 bg-light">
-                <Icon icon="mdi:baseball-bat" width={20} height={20} />
-                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
-                  PC Keeper
-                </span>
-                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
-                  {roleMatricsCount?.pcKeeperCount}
-                </span>
-              </div>
-              <div className="d-flex m-3 px-3 py-2 bg-light">
-                <Icon icon="mdi:person" width="20" height="20" />
-                <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
-                  Keeper
-                </span>
-                <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
-                  {roleMatricsCount?.keeperCount}
-                </span>
+              <div className="border mt-4 rounded-1">
+                <div className="border-bottom">
+                  <div className="d-flex justify-content-between">
+                    <h6
+                      className="p-3"
+                      style={{ fontWeight: "bold", marginBottom: 0 }}
+                    >
+                      Role Matrics
+                    </h6>
+                  </div>
+                </div>
+                <div className="d-flex m-3 px-3 py-2 bg-light">
+                  <Icon icon="typcn:video" width="20" height="20" />
+                  <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                    Video Streamer
+                  </span>
+                  <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                    {roleMatricsCount?.videoStreamCount}
+                  </span>
+                </div>
+                <div className="d-flex m-3 px-3 py-2 bg-light">
+                  <Icon icon="clarity:computer-solid" width="20" height="20" />
+                  <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                    Scorer
+                  </span>
+                  <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                    {roleMatricsCount?.scorerCount}
+                  </span>
+                </div>
+                <div className="d-flex m-3 px-3 py-2 bg-light">
+                  <Icon icon="mdi:baseball-bat" width={20} height={20} />
+                  <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                    PC Keeper
+                  </span>
+                  <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                    {roleMatricsCount?.pcKeeperCount}
+                  </span>
+                </div>
+                <div className="d-flex m-3 px-3 py-2 bg-light">
+                  <Icon icon="mdi:person" width="20" height="20" />
+                  <span className="ms-2" style={{ fontSize: FONT_SIZE.S }}>
+                    Keeper
+                  </span>
+                  <span style={{ fontSize: FONT_SIZE.S, marginLeft: "auto" }}>
+                    {roleMatricsCount?.keeperCount}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
