@@ -278,7 +278,7 @@ const DashboardScreen = () => {
           </div>
         </div>
       </div>
-      <div style={{overflow:"auto"}}>
+      <div className="overflow-auto">
         <div className="d-flex flex-row justify-content-between ms-4 me-5 my-3 border-bottom">
           <h6 className="mb-0 fw-bold">Events</h6>
           <div className="d-flex">

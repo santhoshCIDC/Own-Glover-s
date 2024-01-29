@@ -8,18 +8,21 @@ import { getTeamsListDispatch } from "../redux/slices/TeamsListSlice";
 import CircleLoading from "../components/CircleLoading";
 import { FONT_SIZE } from "../utils/constants";
 import Pagination from "../components/Pagination";
+import DropdownItem from "../components/DropdownItem";
 
 const TeamsList = () => {
   const itemsPerPage = 10;
   const dispatch = useDispatch();
   const [isSearch, setIsSearch] = useState("");
+  const [dropdownOverlay, setDropdownOverlay] = useState("");
+
   const [getTeamsList, { data, isLoading, isFetching }] =
     useLazyGetTeamsListQuery();
   const teamsList = useSelector((state) => state.teamsListState.teamsList);
   const [page, setPage] = useState({
     currentPageForTeamList: 1,
   });
-  console.log("search----", isSearch);
+
   useEffect(() => {
     getTeamsList({ search: isSearch });
   }, [getTeamsList, isSearch]);
@@ -39,22 +42,13 @@ const TeamsList = () => {
   const indexOfLastPostForTeamList = page.currentPageForTeamList * itemsPerPage;
   const indexOfFirstPostForTeamList = indexOfLastPostForTeamList - itemsPerPage;
 
-  const onButtonClick = () => {
-    // using Java Script method to get PDF file
-    fetch("SamplePDF.pdf").then((response) => {
-      response.blob().then((blob) => {
-        // Creating new object of PDF file
-        const fileURL = window.URL.createObjectURL(blob);
-
-        // Setting various property values
-        let alink = document.createElement("a");
-        alink.href = fileURL;
-        alink.download = "SamplePDF.pdf";
-        alink.click();
-      });
-    });
+  const handleMouseOver = (menu) => {
+    setDropdownOverlay(menu);
   };
 
+  const handleMouseOut = () => {
+    setDropdownOverlay("");
+  };
   return (
     <div>
       <div className="container-fluid p-0">
@@ -88,25 +82,50 @@ const TeamsList = () => {
                     }}
                     CloseBtnOnClick={() => setIsSearch("")}
                   />
-                 <button
-                    type="button"
-                    className="btn btn-primary d-flex align-items-center ms-4 me-xl-5 me-0"
-                    style={{
-                      fontSize: FONT_SIZE.S,
-                      minWidth: "fit-content",
-                      backgroundColor: "#3796f3",
-                      borderColor: "#3796f3",
-                    }}
-                  >
-                    <Icon
-                      className="me-2"
-                      icon="ion:document-text-outline"
-                      color="white"
-                      width="16"
-                      height="16"
-                    />
-                    Export Report
-                  </button>
+                  <div class="dropdown">
+                    <button
+                      type="button"
+                      className="btn btn-primary d-flex align-items-center ms-sm-3 ms-0 me-xl-5 me-0"
+                      data-bs-toggle="dropdown"
+                      style={{
+                        fontSize: FONT_SIZE.S,
+                        minWidth: "fit-content",
+                        backgroundColor: "#3796f3",
+                        borderColor: "#3796f3",
+                      }}
+                    >
+                      <Icon
+                        className="me-2"
+                        icon="ion:document-text-outline"
+                        color="white"
+                        width="16"
+                        height="16"
+                      />
+                      Export Report
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <DropdownItem
+                          icon="heroicons:document-text"
+                          text="CSV Format"
+                          color="#2d6efd"
+                          overlay={dropdownOverlay === "menu1"}
+                          onMouseOver={() => handleMouseOver("menu1")}
+                          onMouseOut={handleMouseOut}
+                        />
+                      </li>
+                      <li>
+                        <DropdownItem
+                          icon="heroicons:document-plus"
+                          text="PDF Format"
+                          color="#575757"
+                          overlay={dropdownOverlay === "menu2"}
+                          onMouseOver={() => handleMouseOver("menu2")}
+                          onMouseOut={handleMouseOut}
+                        />
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>

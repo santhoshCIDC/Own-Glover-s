@@ -28,6 +28,7 @@ import {
   teamResponsibilityDispatch,
 } from "../redux/slices/UsersListSlice";
 import RenderModal from "../components/RenderModal";
+import DropdownItem from "../components/DropdownItem";
 
 const UserListScreen = () => {
   // Global State
@@ -68,6 +69,7 @@ const UserListScreen = () => {
     currentPageForPlayerList: 1,
     currentPageForFanList: 1,
   });
+  const [dropdownOverlay, setDropdownOverlay] = useState("");
 
   // API call
   const [
@@ -322,6 +324,13 @@ const UserListScreen = () => {
       </div>
     );
   };
+  const handleMouseOver = (menu) => {
+    setDropdownOverlay(menu);
+  };
+
+  const handleMouseOut = () => {
+    setDropdownOverlay("");
+  };
   return (
     <div>
       <div className="container-fluid p-0">
@@ -393,43 +402,48 @@ const UserListScreen = () => {
                     </button>
                     <ul className="dropdown-menu">
                       <li>
-                        <div
-                          className="d-flex align-items-center"
-                          style={{ margin: "5px" }}
+                        <DropdownItem
+                          icon="la:id-card"
+                          text="All"
+                          color="#575757"
+                          overlay={dropdownOverlay === "all"}
+                          onMouseOver={() => handleMouseOver("all")}
+                          onMouseOut={handleMouseOut}
                           onClick={() => {
                             setUserStatusFilter("all");
                             setResponsibilityStaffFilter(null);
                           }}
-                        >
-                          <Icon icon="la:id-card" width="20" height="20" />
-                          <span className="user-filter">All</span>
-                        </div>
+                        />
                       </li>
                       <li>
-                        <div
-                          className="d-flex align-items-center"
-                          style={{ margin: "5px" }}
+                        <DropdownItem
+                          icon="la:id-card"
+                          text="Activated Users"
+                          color="#575757"
+                          overlay={dropdownOverlay === "activatedUsers"}
+                          onMouseOver={() => handleMouseOver("activatedUsers")}
+                          onMouseOut={handleMouseOut}
                           onClick={() => {
                             setUserStatusFilter("activeUsers");
                             setResponsibilityStaffFilter(null);
                           }}
-                        >
-                          <Icon icon="la:id-card" width="20" height="20" />
-                          <span className="user-filter">Activated Users</span>
-                        </div>
+                        />
                       </li>
                       <li>
-                        <div
-                          className="d-flex align-items-center"
-                          style={{ margin: "5px" }}
+                        <DropdownItem
+                          icon="la:id-card"
+                          text="Deactivated Users"
+                          color="#575757"
+                          overlay={dropdownOverlay === "deactivatedUsers"}
+                          onMouseOver={() =>
+                            handleMouseOver("deactivatedUsers")
+                          }
+                          onMouseOut={handleMouseOut}
                           onClick={() => {
                             setUserStatusFilter("deactiveUsers");
                             setResponsibilityStaffFilter(null);
                           }}
-                        >
-                          <Icon icon="la:id-card" width="20" height="20" />
-                          <span className="user-filter">Deactivated Users</span>
-                        </div>
+                        />
                       </li>
                     </ul>
                   </div>
@@ -511,25 +525,50 @@ const UserListScreen = () => {
                       </ul>
                     </div>
                   )}
-                  <button
-                    type="button"
-                    className="btn btn-primary d-flex align-items-center ms-sm-3 ms-0 me-xl-5 me-0"
-                    style={{
-                      fontSize: FONT_SIZE.S,
-                      minWidth: "fit-content",
-                      backgroundColor: "#3796f3",
-                      borderColor: "#3796f3",
-                    }}
-                  >
-                    <Icon
-                      className="me-2"
-                      icon="ion:document-text-outline"
-                      color="white"
-                      width="16"
-                      height="16"
-                    />
-                    Export Report
-                  </button>
+                  <div class="dropdown">
+                    <button
+                      type="button"
+                      className="btn btn-primary d-flex align-items-center ms-sm-3 ms-0 me-xl-5 me-0"
+                      data-bs-toggle="dropdown"
+                      style={{
+                        fontSize: FONT_SIZE.S,
+                        minWidth: "fit-content",
+                        backgroundColor: "#3796f3",
+                        borderColor: "#3796f3",
+                      }}
+                    >
+                      <Icon
+                        className="me-2"
+                        icon="ion:document-text-outline"
+                        color="white"
+                        width="16"
+                        height="16"
+                      />
+                      Export Report
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <DropdownItem
+                          icon="heroicons:document-text"
+                          text="CSV Format"
+                          color="#2d6efd"
+                          overlay={dropdownOverlay === "menu1"}
+                          onMouseOver={() => handleMouseOver("menu1")}
+                          onMouseOut={handleMouseOut}
+                        />
+                      </li>
+                      <li>
+                        <DropdownItem
+                          icon="heroicons:document-plus"
+                          text="PDF Format"
+                          color="#575757"
+                          overlay={dropdownOverlay === "menu2"}
+                          onMouseOver={() => handleMouseOver("menu2")}
+                          onMouseOut={handleMouseOut}
+                        />
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
