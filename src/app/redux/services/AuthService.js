@@ -7,7 +7,6 @@ import {
   REFRESH_TOKEN,
 } from "../../utils/URL";
 import HttpsClient from "../../utils/HttpsClient";
-import { logout, setUserDetails } from "../slices/AuthSlice";
 
 export const authService = createApi({
   reducerPath: "authService",
@@ -18,13 +17,7 @@ export const authService = createApi({
         url: LOGIN,
         method: "POST",
         body,
-      }),
-      onQueryStarted: async (args, { dispatch, queryFulfilled }) => {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setUserDetails(data.data));
-        } catch (error) {}
-      },
+      }),  
     }),
     refreshToken: builder.mutation({
       query: (body) => ({

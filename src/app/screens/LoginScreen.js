@@ -8,24 +8,26 @@ import { useNavigate } from "react-router-dom";
 import { loader } from "../components/Loader";
 import InputContainer from "../components/InputContainer";
 import { useLoginUserMutation } from "../redux/services/AuthService";
+import { useDispatch } from "react-redux";
+import { setUserDetails } from "../redux/slices/AuthSlice";
 
 const LoginScreen = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [login, { data, isLoading, isSuccess }] = useLoginUserMutation();
+  const [login, { data, isLoading }] = useLoginUserMutation();
 
   useEffect(() => {
-    if (data?.code === 0) {
-      if (isSuccess) {
-        navigate("/dashboard");
-        Utility.toastMessage("Login successfully");
-      } 
+    if (!isLoading && data?.code === 0) {
+      dispatch(setUserDetails(data?.data));
+      navigate("/dashboard");
+      Utility.toastMessage("Login successfully");
     } else {
       Utility.toastMessage(data?.message);
     }
-  }, [isSuccess, data, navigate]);
+  }, [data?.code, isLoading, login]);
 
   const onClickLoginButton = async () => {
     if (email.trim().length === 0) {
@@ -71,85 +73,87 @@ const LoginScreen = () => {
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
-        <Card
-          className="col-4 "
-          style={{
-            width: "100%",
-            padding: 24,
-          }}
-        >
-          <img
-            alt="gloverslogo"
-            style={{
-              width: "60%",
-              alignSelf: "center",
-            }}
-            src={require("../assets/gloverslogo.png")}
-          />
           <Card
+            className="col-4 "
             style={{
-              marginTop: 24,
+              width: "100%",
               padding: 24,
             }}
           >
-            <h3>Login</h3>
-            <h6>Please enter the email and password</h6>
-            <div className="col-12 mt-3">
-              <div className="flex">
-                <InputContainer
-                  placeholder={"Email"}
-                  type={"email"}
-                  value={email}
-                  onChange={(text) => setEmail(text.target.value)}
-                />
-                <div className="col-12 my-3">
-                  <div style={{ position: "relative" }}>
-                    <InputContainer
-                      placeholder={"Password"}
-                      value={password}
-                      onChange={(text) => setPassword(text.target.value)}
-                      type={showPassword ? "text" : "password"}
-                      rightIcon={showPassword ? "ion:eye" : "el:eye-close"}
-                      onClickRightIcon={togglePasswordVisibility}
-                    />
-                  </div>
-                </div>
-                <Button
-                  style={{
-                    width: "-webkit-fill-available",
-                    height: 40,
-                    marginBottom: 13,
-                    borderRadius: 8,
-                    backgroundColor: COLOR.BUTTON_COLOR,
-                    borderColor: COLOR.BUTTON_COLOR,
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                  onClick={onClickLoginButton}
-                  disabled={isLoading ? true : false}
-                >
-                  {isLoading ? (
-                    loader()
-                  ) : (
-                    <h5 style={{ fontSize: FONT_SIZE.S, display: "contents" }}>
-                      Login
-                    </h5>
-                  )}
-                </Button>
-              </div>
-            </div>
-            <h6
+            <img
+              alt="gloverslogo"
               style={{
-                fontSize: FONT_SIZE.S,
-                textDecorationLine: "underline",
-                color: COLOR.APP_COLOR,
+                width: "60%",
+                alignSelf: "center",
               }}
-              onClick={() => navigate("/forgotPassword")}
+              src={require("../assets/gloverslogo.png")}
+            />
+            <Card
+              style={{
+                marginTop: 24,
+                padding: 24,
+              }}
             >
-              Forgot Password?
-            </h6>
+              <h3>Login</h3>
+              <h6>Please enter the email and password</h6>
+              <div className="col-12 mt-3">
+                <div className="flex">
+                  <InputContainer
+                    placeholder={"Email"}
+                    type={"email"}
+                    value={email}
+                    onChange={(text) => setEmail(text.target.value)}
+                  />
+                  <div className="col-12 my-3">
+                    <div style={{ position: "relative" }}>
+                      <InputContainer
+                        placeholder={"Password"}
+                        value={password}
+                        onChange={(text) => setPassword(text.target.value)}
+                        type={showPassword ? "text" : "password"}
+                        rightIcon={showPassword ? "ion:eye" : "el:eye-close"}
+                        onClickRightIcon={togglePasswordVisibility}
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    style={{
+                      width: "-webkit-fill-available",
+                      height: 40,
+                      marginBottom: 13,
+                      borderRadius: 8,
+                      backgroundColor: COLOR.BUTTON_COLOR,
+                      borderColor: COLOR.BUTTON_COLOR,
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                    onClick={onClickLoginButton}
+                    disabled={isLoading ? true : false}
+                  >
+                    {isLoading ? (
+                      loader()
+                    ) : (
+                      <h5
+                        style={{ fontSize: FONT_SIZE.S, display: "contents" }}
+                      >
+                        Login
+                      </h5>
+                    )}
+                  </Button>
+                </div>
+              </div>
+              <h6
+                style={{
+                  fontSize: FONT_SIZE.S,
+                  textDecorationLine: "underline",
+                  color: COLOR.APP_COLOR,
+                }}
+                onClick={() => navigate("/forgotPassword")}
+              >
+                Forgot Password?
+              </h6>
+            </Card>
           </Card>
-        </Card>
         </motion.div>
         <div className="col-4"></div>
       </div>

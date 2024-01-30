@@ -52,7 +52,8 @@ const HttpsClient = async (args, api, extraOptions) => {
       result = await baseQuery(args, api, extraOptions);
     }
   }
-  if (result.data.message === "Token expired!") {
+  
+  if (result.error&& result.error.data.error === "Token expired") {
     api.dispatch(isLogout());
   }
   return result;

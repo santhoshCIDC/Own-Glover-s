@@ -9,6 +9,9 @@ import CircleLoading from "../components/CircleLoading";
 import { FONT_SIZE } from "../utils/constants";
 import Pagination from "../components/Pagination";
 import DropdownItem from "../components/DropdownItem";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 const EventsList = () => {
   const itemsPerPage = 10;
   const EventsTab = [
@@ -20,6 +23,7 @@ const EventsList = () => {
   const dispatch = useDispatch();
   const [isSearch, setIsSearch] = useState("");
   const [dropdownOverlay, setDropdownOverlay] = useState("");
+  const [pdfList, setPdfList] = useState([]);
 
   const [getEventsList, { isLoading, data, isFetching }] =
     useLazyGetEventsListQuery();
@@ -40,6 +44,16 @@ const EventsList = () => {
       dispatch(getEventsListDispatch(data?.data));
     }
   }, [data?.code, isLoading, isFetching]);
+
+  useEffect(() => {
+    if (eventsType === "live") {
+      setPdfList(eventsList?.live);
+    } else if (eventsType === "recent") {
+      setPdfList(eventsList?.recent);
+    } else {
+      setPdfList(eventsList?.upcoming);
+    }
+  }, [eventsType]);
 
   //live
   const indexOfLastPostForLiveList = page.currentPageForLiveList * itemsPerPage;
@@ -71,6 +85,57 @@ const EventsList = () => {
 
   const handleMouseOut = () => {
     setDropdownOverlay("");
+  };
+
+  const pdfExport = () => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title =
+      eventsType === "live"
+        ? "Live Events List"
+        : eventsType === "recent"
+        ? "Recent Events List"
+        : "Upcoming Events List";
+
+    const headers = [
+      [
+        "EVENT TYPE",
+        "SCRIMAGE",
+        "PLAYING TEAM",
+        "OPPONENT TEAM",
+        "LOCATION",
+        "PROGRESS",
+        "RESULT",
+        "CREATED DATE",
+      ],
+    ];
+    const data = pdfList?.map((elt) => [
+      elt.event_type,
+      elt.scrimmage ? "Yes" : "No",
+      elt.playing_team,
+      elt.opponent_team,
+      elt.location,
+      elt.progress,
+      elt.game_status,
+      new Date(elt.game_start_date).toLocaleDateString(),
+    ]);
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+    };
+
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("report.pdf");
   };
   return (
     <div>
@@ -158,6 +223,7 @@ const EventsList = () => {
                           overlay={dropdownOverlay === "menu2"}
                           onMouseOver={() => handleMouseOver("menu2")}
                           onMouseOut={handleMouseOut}
+                          onClick={() => pdfExport()}
                         />
                       </li>
                     </ul>

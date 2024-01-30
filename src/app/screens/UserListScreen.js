@@ -29,6 +29,8 @@ import {
 } from "../redux/slices/UsersListSlice";
 import RenderModal from "../components/RenderModal";
 import DropdownItem from "../components/DropdownItem";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const UserListScreen = () => {
   // Global State
@@ -70,6 +72,7 @@ const UserListScreen = () => {
     currentPageForFanList: 1,
   });
   const [dropdownOverlay, setDropdownOverlay] = useState("");
+  const [pdfList, setPdfList] = useState([]);
 
   // API call
   const [
@@ -193,6 +196,18 @@ const UserListScreen = () => {
     eventsType,
     responsibilityFilter === null,
   ]);
+
+  useEffect(() => {
+    if (eventsType === "coach") {
+      setPdfList(coachesList);
+    } else if (eventsType === "staff") {
+      setPdfList(staffsList);
+    } else if (eventsType === "player") {
+      setPdfList(playersList);
+    } else {
+      setPdfList(fansList);
+    }
+  }, [eventsType]);
 
   useEffect(() => {
     const bActiveStaffs = staffsList.filter((item) => item.responsibility.b);
@@ -327,9 +342,45 @@ const UserListScreen = () => {
   const handleMouseOver = (menu) => {
     setDropdownOverlay(menu);
   };
-
   const handleMouseOut = () => {
     setDropdownOverlay("");
+  };
+  const pdfExport = () => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title =
+      eventsType === "coach"
+        ? "Coach List"
+        : eventsType === "staff"
+        ? "Staff List"
+        : eventsType === "player"
+        ? "Player List"
+        : "Fan List";
+
+    const headers = [["FIRST NAME", "LAST NAME", "EMAIL", "TEAM NAME"]];
+    const data = pdfList?.map((elt) => [
+      elt.first_name,
+      elt.last_name,
+      elt.email,
+      elt.team_name,
+    ]);
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+    };
+
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("report.pdf");
   };
   return (
     <div>
@@ -565,6 +616,7 @@ const UserListScreen = () => {
                           overlay={dropdownOverlay === "menu2"}
                           onMouseOver={() => handleMouseOver("menu2")}
                           onMouseOut={handleMouseOut}
+                          onClick={() => pdfExport()}
                         />
                       </li>
                     </ul>

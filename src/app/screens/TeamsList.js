@@ -9,6 +9,8 @@ import CircleLoading from "../components/CircleLoading";
 import { FONT_SIZE } from "../utils/constants";
 import Pagination from "../components/Pagination";
 import DropdownItem from "../components/DropdownItem";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const TeamsList = () => {
   const itemsPerPage = 10;
@@ -48,6 +50,40 @@ const TeamsList = () => {
 
   const handleMouseOut = () => {
     setDropdownOverlay("");
+  };
+
+  const pdfExport = () => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title = "Team List";
+
+    const headers = [
+      ["TEAM NAME", "TEAM TYPE", "AGE GROUP", "SEASON", "LOCATION"],
+    ];
+    const data = teamsList?.map((elt) => [
+      elt.team_name,
+      elt.team_type,
+      elt.age_value,
+      elt.season_name,
+      elt.address,
+    ]);
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+    };
+
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("report.pdf");
   };
   return (
     <div>
@@ -122,6 +158,7 @@ const TeamsList = () => {
                           overlay={dropdownOverlay === "menu2"}
                           onMouseOver={() => handleMouseOver("menu2")}
                           onMouseOut={handleMouseOut}
+                          onClick={() => pdfExport()}
                         />
                       </li>
                     </ul>

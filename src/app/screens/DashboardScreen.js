@@ -256,7 +256,7 @@ const DashboardScreen = () => {
   ]);
 
   return (
-    <div className="container-fluid h-100 p-0">
+    <div className="container-fluid h-100 p-0 d-flex flex-column">
       <Header
         searchBar={true}
         className={"search-container col-sm-3 mb-md-0 mb-3 ms-3"}
@@ -278,7 +278,7 @@ const DashboardScreen = () => {
           </div>
         </div>
       </div>
-      <div className="overflow-auto">
+      <div className="container-fluid flex-fill overflow-auto">
         <div className="d-flex flex-row justify-content-between ms-4 me-5 my-3 border-bottom">
           <h6 className="mb-0 fw-bold">Events</h6>
           <div className="d-flex">

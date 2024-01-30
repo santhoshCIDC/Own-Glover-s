@@ -17,7 +17,7 @@ function ProtectedRoute({ auth, children }) {
               title6={"Settings"}
             />
           </div>
-          <div className="d-flex flex-column col-sm-10 p-0">{children}</div>
+          <div className="d-flex h-100 flex-column col-sm-10 p-0">{children}</div>
         </div>
       </div>
     );
