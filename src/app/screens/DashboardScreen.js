@@ -292,7 +292,7 @@ const DashboardScreen = () => {
             {eventsTabList?.live.length === 1 && (
               <a
                 className="ms-2"
-                style={{ fontSize: FONT_SIZE.XS, textDecorationLine: "none" }}
+                style={{ fontSize: FONT_SIZE.XS }}
                 href="/eventsList"
               >
                 {eventsTabList?.live[0]?.playing_team} vs{" "}
@@ -301,7 +301,7 @@ const DashboardScreen = () => {
             )}
             <a
               className="ms-2"
-              style={{ fontSize: FONT_SIZE.XS, textDecorationLine: "none" }}
+              style={{ fontSize: FONT_SIZE.XS }}
               href="/eventsList"
             >
               View all

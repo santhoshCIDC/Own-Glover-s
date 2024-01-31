@@ -11,6 +11,7 @@ import Pagination from "../components/Pagination";
 import DropdownItem from "../components/DropdownItem";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { CSVLink } from "react-csv";
 
 const TeamsList = () => {
   const itemsPerPage = 10;
@@ -67,6 +68,7 @@ const TeamsList = () => {
     const headers = [
       ["TEAM NAME", "TEAM TYPE", "AGE GROUP", "SEASON", "LOCATION"],
     ];
+
     const data = teamsList?.map((elt) => [
       elt.team_name,
       elt.team_type,
@@ -85,6 +87,11 @@ const TeamsList = () => {
     doc.autoTable(content);
     doc.save("report.pdf");
   };
+  const csvData = teamsList?.map((object) => {
+    const { _id, game_type, ...rest } = object;
+    return rest;
+  });
+  console.log("fkadsjfkdhsfhads", csvData);
   return (
     <div>
       <div className="container-fluid p-0">
@@ -148,6 +155,9 @@ const TeamsList = () => {
                           overlay={dropdownOverlay === "menu1"}
                           onMouseOver={() => handleMouseOver("menu1")}
                           onMouseOut={handleMouseOut}
+                          CSVFormat={true}
+                          csvData={csvData}
+                          filename={"Team List"}
                         />
                       </li>
                       <li>
@@ -202,7 +212,7 @@ const TeamsList = () => {
                                   <tr>
                                     <th
                                       className={
-                                        "bg-light border-top border-bottom py-2 ps-2"
+                                        "bg-light border-top border-bottom py-3 ps-2"
                                       }
                                       style={{
                                         fontSize: FONT_SIZE.S,
@@ -212,7 +222,7 @@ const TeamsList = () => {
                                     </th>
                                     <th
                                       className={
-                                        "bg-light border-top border-bottom py-2 ps-2"
+                                        "bg-light border-top border-bottom py-3 ps-2"
                                       }
                                       style={{
                                         fontSize: FONT_SIZE.S,
@@ -222,7 +232,7 @@ const TeamsList = () => {
                                     </th>
                                     <th
                                       className={
-                                        "bg-light border-top border-bottom py-2 ps-2"
+                                        "bg-light border-top border-bottom py-3 ps-2"
                                       }
                                       style={{
                                         fontSize: FONT_SIZE.S,
@@ -232,7 +242,7 @@ const TeamsList = () => {
                                     </th>
                                     <th
                                       className={
-                                        "bg-light border-top border-bottom py-2 ps-2"
+                                        "bg-light border-top border-bottom py-3 ps-2"
                                       }
                                       style={{
                                         fontSize: FONT_SIZE.S,
@@ -242,7 +252,7 @@ const TeamsList = () => {
                                     </th>
                                     <th
                                       className={
-                                        "bg-light border-top border-bottom py-2 ps-2"
+                                        "bg-light border-top border-bottom py-3 ps-2"
                                       }
                                       style={{
                                         fontSize: FONT_SIZE.S,
@@ -252,7 +262,7 @@ const TeamsList = () => {
                                     </th>
                                     <th
                                       className={
-                                        "bg-light border-top border-bottom py-2 ps-2"
+                                        "bg-light border-top border-bottom py-3 ps-2"
                                       }
                                       style={{
                                         fontSize: FONT_SIZE.S,
@@ -274,7 +284,7 @@ const TeamsList = () => {
                                             fontSize: FONT_SIZE.S,
                                           }}
                                         >
-                                          <td>
+                                          <td className="table_list">
                                             {(
                                               (page?.currentPageForTeamList -
                                                 1) *
@@ -285,11 +295,21 @@ const TeamsList = () => {
                                               .toString()
                                               .padStart(2, "0")}
                                           </td>
-                                          <td>{item.team_name}</td>
-                                          <td>{item.team_type}</td>
-                                          <td>{item.age_value}</td>
-                                          <td>{item.season_name}</td>
-                                          <td>{item.address}</td>
+                                          <td className="table_list">
+                                            {item.team_name}
+                                          </td>
+                                          <td className="table_list">
+                                            {item.team_type}
+                                          </td>
+                                          <td className="table_list">
+                                            {item.age_value}
+                                          </td>
+                                          <td className="table_list">
+                                            {item.season_name}
+                                          </td>
+                                          <td className="table_list">
+                                            {item.address}
+                                          </td>
                                         </tr>
                                       ))}
                                   </tbody>

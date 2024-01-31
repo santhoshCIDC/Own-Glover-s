@@ -227,7 +227,7 @@ const SeasonsScreen = () => {
                           <tr>
                             <th
                               className={
-                                "bg-light border-top border-bottom py-2 ps-2"
+                                "bg-light border-top border-bottom py-3 ps-2"
                               }
                               style={{
                                 fontSize: FONT_SIZE.S,
@@ -237,7 +237,7 @@ const SeasonsScreen = () => {
                             </th>
                             <th
                               className={
-                                "bg-light border-top border-bottom py-2 ps-2"
+                                "bg-light border-top border-bottom py-3 ps-2"
                               }
                               style={{
                                 fontSize: FONT_SIZE.S,
@@ -247,7 +247,7 @@ const SeasonsScreen = () => {
                             </th>
                             <th
                               className={
-                                "bg-light border-top border-bottom py-2 ps-2"
+                                "bg-light border-top border-bottom py-3 ps-2"
                               }
                               style={{
                                 fontSize: FONT_SIZE.S,
@@ -257,7 +257,7 @@ const SeasonsScreen = () => {
                             </th>
                             <th
                               className={
-                                "bg-light border-top border-bottom py-2 ps-2"
+                                "bg-light border-top border-bottom py-3 ps-2"
                               }
                               style={{
                                 fontSize: FONT_SIZE.S,
@@ -267,7 +267,7 @@ const SeasonsScreen = () => {
                             </th>
                             <th
                               className={
-                                "bg-light border-top border-bottom py-2 ps-2"
+                                "bg-light border-top border-bottom py-3 ps-2"
                               }
                               style={{
                                 fontSize: FONT_SIZE.S,
@@ -287,7 +287,7 @@ const SeasonsScreen = () => {
                                   fontSize: FONT_SIZE.S,
                                 }}
                               >
-                                <td>
+                                <td className="table_list">
                                   {(
                                     (page?.currentPageForSeasonList - 1) * 10 +
                                     index +
@@ -296,8 +296,8 @@ const SeasonsScreen = () => {
                                     .toString()
                                     .padStart(2, "0")}
                                 </td>
-                                <td>{item.values}</td>
-                                <td>
+                                <td className="table_list">{item.values}</td>
+                                <td className="table_list">
                                   <img
                                     onClick={() => {
                                       onClickEdit(item);
@@ -314,7 +314,7 @@ const SeasonsScreen = () => {
                                     data-tooltip-id="edit-tooltip"
                                   />
                                 </td>
-                                <td>
+                                <td className="table_list">
                                   <img
                                     onClick={() => {
                                       setSeasonItem(item);
@@ -331,6 +331,7 @@ const SeasonsScreen = () => {
                                   />
                                 </td>
                                 <td
+                                  className="table_list"
                                   style={{
                                     color: item.season_expired
                                       ? "red"

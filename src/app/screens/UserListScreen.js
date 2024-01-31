@@ -73,6 +73,7 @@ const UserListScreen = () => {
   });
   const [dropdownOverlay, setDropdownOverlay] = useState("");
   const [pdfList, setPdfList] = useState([]);
+  const [csvList, setCsvList] = useState([]);
 
   // API call
   const [
@@ -196,16 +197,35 @@ const UserListScreen = () => {
     eventsType,
     responsibilityFilter === null,
   ]);
+  const renderCSVData = ({ item }) => {
+    const modifiedCsvData = item.map((entry) => ({
+      ...entry,
+      status: entry.status ? "Active" : "InActive",
+      is_subscribe: entry.is_subscribe ? "Active" : "InActive",
+    }));
+
+    // Remove unwanted keys from each object in modifiedCsvData
+    const filteredCsvData = modifiedCsvData.map(
+      ({ _id, created_at, current_subscription_data,role,responsibility, ...rest }) => rest
+    );
+
+    setCsvList(filteredCsvData);
+    return filteredCsvData;
+  };
 
   useEffect(() => {
     if (eventsType === "coach") {
       setPdfList(coachesList);
+      renderCSVData({ item: coachesList || [] });
     } else if (eventsType === "staff") {
       setPdfList(staffsList);
+      renderCSVData({ item: staffsList || [] });
     } else if (eventsType === "player") {
       setPdfList(playersList);
+      renderCSVData({ item: playersList || [] });
     } else {
       setPdfList(fansList);
+      renderCSVData({ item: fansList || [] });
     }
   }, [eventsType]);
 
@@ -606,6 +626,17 @@ const UserListScreen = () => {
                           overlay={dropdownOverlay === "menu1"}
                           onMouseOver={() => handleMouseOver("menu1")}
                           onMouseOut={handleMouseOut}
+                          csvData={csvList}
+                          CSVFormat={true}
+                          filename={
+                            eventsType === "coach"
+                              ? "Coach List"
+                              : eventsType === "staff"
+                              ? "Staff List"
+                              : eventsType === "player"
+                              ? "Player List"
+                              : "Fan List"
+                          }
                         />
                       </li>
                       <li>
@@ -665,7 +696,7 @@ const UserListScreen = () => {
                                     <tr>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -675,7 +706,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -685,7 +716,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -695,7 +726,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -705,7 +736,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -715,7 +746,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1137,7 +1168,7 @@ const UserListScreen = () => {
                                     <tr>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1147,7 +1178,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1157,7 +1188,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1167,7 +1198,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1177,7 +1208,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1187,7 +1218,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1197,7 +1228,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1453,7 +1484,7 @@ const UserListScreen = () => {
                                     <tr>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1463,7 +1494,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1473,7 +1504,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1483,7 +1514,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1493,7 +1524,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1503,7 +1534,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1513,7 +1544,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1523,7 +1554,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1533,7 +1564,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1738,7 +1769,7 @@ const UserListScreen = () => {
                                     <tr>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1748,7 +1779,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1758,7 +1789,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1768,7 +1799,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1778,7 +1809,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1788,7 +1819,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,
@@ -1798,7 +1829,7 @@ const UserListScreen = () => {
                                       </th>
                                       <th
                                         className={
-                                          "bg-light border-top border-bottom py-2 ps-2"
+                                          "bg-light border-top border-bottom py-3 ps-2"
                                         }
                                         style={{
                                           fontSize: FONT_SIZE.S,

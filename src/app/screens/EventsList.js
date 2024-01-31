@@ -24,7 +24,7 @@ const EventsList = () => {
   const [isSearch, setIsSearch] = useState("");
   const [dropdownOverlay, setDropdownOverlay] = useState("");
   const [pdfList, setPdfList] = useState([]);
-
+  const [csvList, setCsvList] = useState([]);
   const [getEventsList, { isLoading, data, isFetching }] =
     useLazyGetEventsListQuery();
   const [eventsType, setEventsType] = useState("live");
@@ -45,13 +45,31 @@ const EventsList = () => {
     }
   }, [data?.code, isLoading, isFetching]);
 
+  const renderCSVData = ({ item }) => {
+    const modifiedCsvData = item.map((entry) => ({
+      ...entry,
+      scrimmage: entry.scrimmage ? "Yes" : "No",
+    }));
+
+    // Remove unwanted keys from each object in modifiedCsvData
+    const filteredCsvData = modifiedCsvData.map(
+      ({ _id, game_start_date, place, created_at, ...rest }) => rest
+    );
+
+    setCsvList(filteredCsvData);
+    return filteredCsvData;
+  };
+
   useEffect(() => {
     if (eventsType === "live") {
       setPdfList(eventsList?.live);
+      renderCSVData({ item: eventsList?.live || [] });
     } else if (eventsType === "recent") {
       setPdfList(eventsList?.recent);
+      renderCSVData({ item: eventsList?.recent || [] });
     } else {
       setPdfList(eventsList?.upcoming);
+      renderCSVData({ item: eventsList?.upcoming || [] });
     }
   }, [eventsType]);
 
@@ -137,6 +155,7 @@ const EventsList = () => {
     doc.autoTable(content);
     doc.save("report.pdf");
   };
+
   return (
     <div>
       <div className="container-fluid p-0">
@@ -213,6 +232,15 @@ const EventsList = () => {
                           overlay={dropdownOverlay === "menu1"}
                           onMouseOver={() => handleMouseOver("menu1")}
                           onMouseOut={handleMouseOut}
+                          CSVFormat={true}
+                          csvData={csvList}
+                          filename={
+                            eventsType === "live"
+                              ? "Live Events List"
+                              : eventsType === "recent"
+                              ? "Recent Events List"
+                              : "Upcoming Events List"
+                          }
                         />
                       </li>
                       <li>
@@ -273,7 +301,7 @@ const EventsList = () => {
                                       <tr>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -283,7 +311,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -293,7 +321,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -303,7 +331,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -313,7 +341,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -323,7 +351,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -333,7 +361,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -343,7 +371,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -353,7 +381,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -363,7 +391,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -386,32 +414,40 @@ const EventsList = () => {
                                                   fontSize: FONT_SIZE.S,
                                                 }}
                                               >
-                                                <td>
+                                                <td className="table_list">
                                                   {(index + 1)
                                                     .toString()
                                                     .padStart(2, "0")}
                                                 </td>
-                                                <td>{item.event_type}</td>
-                                                <td>
+                                                <td className="table_list">
+                                                  {item.event_type}
+                                                </td>
+                                                <td className="table_list">
                                                   {item.scrimmage
                                                     ? "Yes"
                                                     : "No"}
                                                 </td>
-                                                <td>{item.playing_team}</td>
-                                                <td>{item.opponent_team}</td>
-                                                <td>{item.location}</td>
-                                                <td className="ps-2 text_red_color">
+                                                <td className="table_list">
+                                                  {item.playing_team}
+                                                </td>
+                                                <td className="table_list">
+                                                  {item.opponent_team}
+                                                </td>
+                                                <td className="table_list">
+                                                  {item.location}
+                                                </td>
+                                                <td className="ps-2 text_red_color table_list">
                                                   {item.progress}
                                                 </td>
-                                                <td className="text_red_color">
+                                                <td className="text_red_color table_list">
                                                   {item.game_status}
                                                 </td>
-                                                <td>
+                                                <td className="table_list">
                                                   {new Date(
                                                     item.game_start_date
                                                   ).toLocaleDateString()}
                                                 </td>
-                                                <td>
+                                                <td className="table_list">
                                                   {new Date(
                                                     item.game_start_date
                                                   ).toLocaleTimeString(
@@ -498,7 +534,7 @@ const EventsList = () => {
                                       <tr>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -611,22 +647,30 @@ const EventsList = () => {
                                                   fontSize: FONT_SIZE.S,
                                                 }}
                                               >
-                                                <td>
+                                                <td className="table_list">
                                                   {(index + 1)
                                                     .toString()
                                                     .padStart(2, "0")}
                                                 </td>
-                                                <td>{item.event_type}</td>
-                                                <td>
+                                                <td className="table_list">
+                                                  {item.event_type}
+                                                </td>
+                                                <td className="table_list">
                                                   {item.scrimmage
                                                     ? "Yes"
                                                     : "No"}
                                                 </td>
-                                                <td>{item.playing_team}</td>
-                                                <td>{item.opponent_team}</td>
-                                                <td>{item.location}</td>
+                                                <td className="table_list">
+                                                  {item.playing_team}
+                                                </td>
+                                                <td className="table_list">
+                                                  {item.opponent_team}
+                                                </td>
+                                                <td className="table_list">
+                                                  {item.location}
+                                                </td>
                                                 <td
-                                                  className={`ps-2 ${
+                                                  className={`ps-2 table_list ${
                                                     item.progress ===
                                                     "Completed"
                                                       ? "text_primary"
@@ -636,7 +680,7 @@ const EventsList = () => {
                                                   {item.progress}
                                                 </td>
                                                 <td
-                                                  className={`${
+                                                  className={`table_list ${
                                                     item.game_status === "END"
                                                       ? "text_primary"
                                                       : "text_secondary"
@@ -644,12 +688,12 @@ const EventsList = () => {
                                                 >
                                                   {item.game_status}
                                                 </td>
-                                                <td>
+                                                <td className="table_list">
                                                   {new Date(
                                                     item.game_start_date
                                                   ).toLocaleDateString()}
                                                 </td>
-                                                <td>
+                                                <td className="table_list">
                                                   {new Date(
                                                     item.game_start_date
                                                   ).toLocaleTimeString(
@@ -740,7 +784,7 @@ const EventsList = () => {
                                       <tr>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -750,7 +794,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -760,7 +804,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -770,7 +814,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -780,7 +824,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -790,7 +834,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -800,7 +844,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -810,7 +854,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -820,7 +864,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -830,7 +874,7 @@ const EventsList = () => {
                                         </th>
                                         <th
                                           className={
-                                            "bg-light border-top border-bottom py-2 ps-2"
+                                            "bg-light border-top border-bottom py-3 ps-2"
                                           }
                                           style={{
                                             fontSize: FONT_SIZE.S,
@@ -853,38 +897,46 @@ const EventsList = () => {
                                                   fontSize: FONT_SIZE.S,
                                                 }}
                                               >
-                                                <td>
+                                                <td className="table_list">
                                                   {(index + 1)
                                                     .toString()
                                                     .padStart(2, "0")}
                                                 </td>
-                                                <td>{item.event_type}</td>
-                                                <td>
+                                                <td className="table_list">
+                                                  {item.event_type}
+                                                </td>
+                                                <td className="table_list">
                                                   {item.scrimmage
                                                     ? "Yes"
                                                     : "No"}
                                                 </td>
-                                                <td>{item.playing_team}</td>
-                                                <td>{item.opponent_team}</td>
-                                                <td>{item.location}</td>
+                                                <td className="table_list">
+                                                  {item.playing_team}
+                                                </td>
+                                                <td className="table_list">
+                                                  {item.opponent_team}
+                                                </td>
+                                                <td className="table_list">
+                                                  {item.location}
+                                                </td>
                                                 <td
-                                                  className="ps-2 fw-bold"
+                                                  className="ps-2 fw-bold table_list"
                                                   style={{ color: "green" }}
                                                 >
                                                   {item.progress}
                                                 </td>
                                                 <td
-                                                  className="ps-2 fw-bold"
+                                                  className="ps-2 fw-bold table_list"
                                                   style={{ color: "green" }}
                                                 >
                                                   {item.game_status}
                                                 </td>
-                                                <td>
+                                                <td className="table_list">
                                                   {new Date(
                                                     item.game_start_date
                                                   ).toLocaleDateString()}
                                                 </td>
-                                                <td>
+                                                <td className="table_list">
                                                   {new Date(
                                                     item.game_start_date
                                                   ).toLocaleTimeString(

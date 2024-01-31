@@ -1,5 +1,6 @@
 import React from "react";
 import { Icon } from "@iconify/react";
+import { CSVLink } from "react-csv";
 
 const DropdownItem = ({
   icon,
@@ -9,6 +10,9 @@ const DropdownItem = ({
   onMouseOver,
   onMouseOut,
   onClick,
+  CSVFormat = false,
+  csvData,
+  filename,
 }) => {
   return (
     <div
@@ -23,7 +27,14 @@ const DropdownItem = ({
     >
       <Icon icon={icon} width="20" height="20" />
       <div className="d-flex align-items-center user-filter">
-        <span style={{ color }}>{text}</span>
+        {CSVFormat ? (
+          <CSVLink data={csvData} target="_blank" filename={filename}>
+            <span style={{ color }}>{text}</span>
+          </CSVLink>
+        ) : (
+          <span style={{ color }}>{text}</span>
+        )}
+
         {(text === "CSV Format" || text === "PDF Format") && (
           <Icon
             icon="tdesign:arrow-triangle-down-filled"
